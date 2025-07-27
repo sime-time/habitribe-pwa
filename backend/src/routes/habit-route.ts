@@ -6,7 +6,7 @@ const router = new Hono();
 router.post("/create", createHabit);
 router.delete("/delete/:id", deleteHabit);
 router.get("/user/:userId", getUserHabits);
-router.post("/user/:userId/entries", getUserHabitEntries);
+router.get("/user/:userId/entries", getUserHabitEntries);
 router.post("/entry/update/:id", updateHabitEntry);
 
 export default router;

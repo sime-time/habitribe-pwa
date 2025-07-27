@@ -1,8 +1,9 @@
 import { Context } from "hono";
 import { habit, habitEntry } from "../db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { HabitSchema, HabitEntrySchema } from "@habitribe/shared-types";
+import { ZodError } from "zod";
 
 export async function createHabit(c: Context) {
   const body = await c.req.json();
@@ -83,37 +84,110 @@ export async function getUserHabits(c: Context) {
   }
 }
 
+
+// ensures that the frontend always receives a complete set of habit entries for any given day,
+// creating them on-the-fly if they're missing.
 export async function getUserHabitEntries(c: Context) {
-  const { userId } = c.req.param();
   try {
-    const body = await c.req.json();
-    const { date } = HabitEntrySchema.pick({ date: true }).parse(body);
+    // get userId from route param
+    const { userId } = c.req.param();
+
+    // get date from query param
+    let queryDate = c.req.query("date");
+    if (!queryDate) {
+      // use today's date
+      queryDate = new Date().toISOString().slice(0, 10);
+    }
+
+    // validate the date format
+    const { date } = HabitEntrySchema.pick({ date: true }).parse({
+      date: queryDate,
+    });
+
+    const targetDate = new Date(date + "T00:00:00Z") // formatted UTC for javascript functions
+    const dayOfWeek = targetDate.getUTCDay();
 
     const db = drizzle(c.env.DB);
-    const userHabitIds = await db
-      .select({ id: habit.id })
+
+    // Get all the user's habits that are active on target date
+    const allUserHabits = await db
+      .select()
       .from(habit)
       .where(eq(habit.userId, parseInt(userId)));
 
-    // for each habit id, get the habit entry with the corresponding date
-    const habitEntries = [];
-    for (let i = 0; i < userHabitIds.length; i++) {
-      const habitId = userHabitIds[i].id;
-      const entry = await db
-        .select()
-        .from(habitEntry)
-        .where(
-          and(
-            eq(habitEntry.habitId, habitId),
-            eq(habitEntry.date, date)))
-        .limit(1);
+    const activeHabits = allUserHabits.filter(h => {
+      // filter() only keeps the elements for which the callback returns 'true'
+      const schedule = h.schedule as { type: string; days?: number[] };
+      if (schedule.type === "daily") {
+        return true;
+      }
+      if (schedule.type === "weekly" && schedule.days?.includes(dayOfWeek)) {
+        return true;
+      }
+      return false;
+    });
 
-      habitEntries.push(entry[0]);
+    if (activeHabits.length === 0) {
+      // No active habits for this day, return empty array
+      return c.json([], 200);
     }
 
-    return c.json(habitEntries, 200);
+
+    // Find which entries already exist for those active habits
+    const activeHabitIds = activeHabits.map(h => h.id);
+    const existingEntries = await db
+      .select()
+      .from(habitEntry)
+      .where(
+        and(
+          inArray(habitEntry.habitId, activeHabitIds),
+          eq(habitEntry.date, date))
+      );
+
+    const existingEntryHabitIds = new Set(existingEntries.map(e => e.habitId));
+
+    // find which entries are missing
+    const missingHabits = activeHabits.filter(h => !existingEntryHabitIds.has(h.id));
+
+    // if there are missing entries, batch create them
+    if (missingHabits.length > 0) {
+      const newEntries = missingHabits.map(h => ({
+        habitId: h.id,
+        date: date,
+        goal: h.goalValue,
+        progress: 0,
+      }));
+
+      await db.insert(habitEntry).values(newEntries);
+    }
+
+    // return the full complete set of habit entries for this date
+    // this runs regardless if new entries are created or not
+    const output = await db
+      .select({
+        id: habitEntry.habitId,
+        name: habit.name,
+        progress: habitEntry.progress,
+        goalValue: habitEntry.goal,
+        goalUnit: habit.goalUnit,
+        status: habitEntry.status,
+      })
+      .from(habitEntry)
+      .leftJoin(habit, eq(habit.id, habitEntry.habitId))
+      .where(
+        and(
+          inArray(habitEntry.habitId, activeHabitIds),
+          eq(habitEntry.date, date)
+        )
+      );
+
+    return c.json(output, 200);
+
   } catch (error) {
     console.error("Error getting user habit entries", error);
+    if (error instanceof ZodError) {
+      return c.json({ error: "Invalid date format. Please use YYYY-MM-DD." }, 400);
+    }
     return c.json({ error: "Something went wrong" }, 500);
   }
 }
@@ -129,6 +203,11 @@ export async function updateHabitEntry(c: Context) {
       .update(habitEntry)
       .set({
         progress,
+        // This logic runs directly in the database for the row being updated.
+        // It checks if the new `progress` value is greater than or equal to the
+        // existing `goal` value for that row. If it is, it sets the status
+        // to 'completed'; otherwise, it sets it to 'pending'.
+        status: sql`CASE WHEN ${progress} >= goal THEN 'completed' ELSE 'pending' END`,
       })
       .where(
         and(
