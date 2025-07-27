@@ -1,1 +1,1 @@
-export * from "./habit-zod";
+export * from "./habit-type";

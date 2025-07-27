@@ -11,7 +11,7 @@ export const habit = sqliteTable("habit", {
 
   // Goal tracking
   goalValue: integer("goal_value").notNull(),
-  goalUnit: text("goal_unit").notNull(),
+  goalUnit: text("goal_unit").notNull(), // could be anything: minutes, hours, count, pages, etc.
 
   // Flexible scheduling
   // e.g. { "type": "daily" , "days": [0,1,2,3,4,5,6] }
@@ -30,9 +30,10 @@ export const habitEntry = sqliteTable("habit_entry", {
   // use composite primary key (habitId & date)
   habitId: integer("habit_id").notNull().references(() => habit.id, { onDelete: "cascade" }),
   date: text("date").default(sql`(CURRENT_DATE)`),
-  // the habit goal value might change, so keep whatever the goal was at that time
+  // the habit goal value might change, so keep whatever the goal was at that time within this entry
   goal: integer("goal").notNull(),
   progress: integer("progress").default(0).notNull(),
+  status: text("status", { enum: ["pending", "completed", "missed"] }).default("pending").notNull(),
 }, (table) => [
   // composite key to ensure one unique habit entry per day
   primaryKey({ columns: [table.habitId, table.date] }),

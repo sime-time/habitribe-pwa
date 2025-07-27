@@ -17,3 +17,12 @@ export const HabitSchema = z.object({
   reminderTime: z.string().optional(),
 });
 export type HabitSchemaType = z.infer<typeof HabitSchema>;
+
+export const HabitEntrySchema = z.object({
+  // date must be in this format to match the SQLite date string format
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+    message: "Date must be in YYYY-MM-DD format",
+  }),
+  progress: z.coerce.number().optional(),
+});
+export type HabitEntrySchemaType = z.infer<typeof HabitEntrySchema>;

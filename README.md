@@ -6,8 +6,9 @@ This project is a full-stack application designed to help users track their habi
 
 -   `pwa/`: Contains the Vue.js progressive web application.
 -   `backend/`: Contains the Cloudflare Worker serverless backend.
+-   `packages/`: Contains shared packages used across the monorepo.
 
-Both packages use `pnpm` for package management.
+All packages use `pnpm` for package management from the root directory.
 
 ## Tech Stack
 
@@ -19,8 +20,9 @@ Both packages use `pnpm` for package management.
 -   **UI:** Tailwind CSS with the DaisyUI component library.
 -   **Routing:** Vue Router
 -   **State Management:** Pinia
+-   **Data Fetching:** TanStack Query (Vue Query)
 -   **Charting:** Chart.js via `vue-chartjs`
--   **Validation:** Zod
+-   **Validation:** Zod (via `@habit-tribe/shared-types`)
 -   **Linting/Formatting:** Biome
 -   **PWA:** Enabled via `vite-plugin-pwa`.
 
@@ -32,11 +34,16 @@ Both packages use `pnpm` for package management.
 -   **ORM:** Drizzle ORM (for Cloudflare D1)
 -   **Authentication:** `better-auth`
 -   **Transactional Emails:** Resend
--   **Validation:** Zod
+-   **Validation:** Zod (via `@habit-tribe/shared-types`)
+
+### Shared (`packages/shared-types`)
+
+-   **Purpose:** Provides shared TypeScript types and Zod validation schemas to ensure consistency between the frontend and backend.
+-   **Key Contents:** `HabitSchema`, `HabitEntrySchema`.
 
 ## Key Commands
 
-To run these commands, first `cd` into the appropriate directory (`pwa` or `backend`). The primary dependency installation command is `pnpm install`.
+To run these commands, first `cd` into the appropriate directory (`pwa` or `backend`). The primary dependency installation command is `pnpm install` from the project root.
 
 ### Frontend (`pwa/`)
 

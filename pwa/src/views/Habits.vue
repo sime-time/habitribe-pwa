@@ -3,29 +3,52 @@ import TabDock from "~/components/TabDock.vue";
 import HabitNavBar from "~/components/habit/HabitNavBar.vue";
 import HabitCard from "~/components/habit/HabitCard.vue";
 import HabitProgressTotal from "~/components/habit/HabitProgressTotal.vue";
+import LoadingSpinner from "~/components/LoadingSpinner.vue";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
-import LoadingSpinner from "~/components/LoadingSpinner.vue";
+import { useRoute } from "vue-router";
+import { computed } from "vue";
 
 // get the user id from auth store
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
 
-// fetch all the habits from this user
-async function fetchUserHabits() {
+// get the date query (YYYY-MM-DD)
+const route = useRoute();
+const date = computed(() => {
+  const dateFromQuery = route.query.date;
+  if (dateFromQuery && typeof dateFromQuery === 'string') {
+    return dateFromQuery;
+  }
+
+  // if no date query, create today's date in YYYY-MM-DD format
+  return new Date().toISOString().slice(0, 10);
+});
+
+// fetch all the habits from this date
+async function fetchUserHabitEntries(dateString: string) {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/habit/user/${user.value?.id}`,
+    `${import.meta.env.VITE_API_URL}/api/habit/user/${user.value?.id}/entries`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        date: dateString
+      }),
+    }
   );
+
   if (!response.ok) {
     throw new Error("Failed to fetch habits from server");
   }
+
   return response.json();
 }
 
 const { data, isLoading, isError, error } = useQuery({
   queryKey: ["habits"],
-  queryFn: fetchUserHabits,
+  queryFn: () => fetchUserHabitEntries(date.value),
 });
 </script>
 

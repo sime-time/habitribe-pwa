@@ -21,7 +21,7 @@ export const auth = (env: CloudflareBindings): ReturnType<typeof betterAuth> => 
     emailAndPassword: {
       enabled: true,
       password: {
-        // better-auth uses scrypt by default which is CPU-intensive (but secure)
+        // better-auth uses "scrypt" by default which is CPU-intensive (but secure)
         // and not suitable for serverless environments like Cloudflare Workers
         async hash(password: string) {
           return await cryptoHash(password);

@@ -2,7 +2,7 @@ import { Context } from "hono";
 import { habit, habitEntry } from "../db/schema";
 import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { HabitSchema } from "@habitribe/shared-types";
+import { HabitSchema, HabitEntrySchema } from "@habitribe/shared-types";
 
 export async function createHabit(c: Context) {
   const body = await c.req.json();
@@ -85,8 +85,10 @@ export async function getUserHabits(c: Context) {
 
 export async function getUserHabitEntries(c: Context) {
   const { userId } = c.req.param();
-  const { date } = c.req.json();
   try {
+    const body = await c.req.json();
+    const { date } = HabitEntrySchema.pick({ date: true }).parse(body);
+
     const db = drizzle(c.env.DB);
     const userHabitIds = await db
       .select({ id: habit.id })
@@ -101,7 +103,10 @@ export async function getUserHabitEntries(c: Context) {
       const entry = await db
         .select()
         .from(habitEntry)
-        .where(and(eq(habitEntry.habitId, habitId), eq(habitEntry.date, date)))
+        .where(
+          and(
+            eq(habitEntry.habitId, habitId),
+            eq(habitEntry.date, date)))
         .limit(1);
 
       habitEntries.push(entry[0]);
@@ -116,16 +121,20 @@ export async function getUserHabitEntries(c: Context) {
 
 export async function updateHabitEntry(c: Context) {
   const { id } = c.req.param();
-  const { date, progress } = c.req.json();
   try {
+    const body = await c.req.json();
+    const { date, progress } = HabitEntrySchema.parse(body);
+
     const db = drizzle(c.env.DB);
     const updatedHabitEntry = await db
       .update(habitEntry)
       .set({
-        progress: parseInt(progress),
+        progress,
       })
       .where(
-        and(eq(habitEntry.habitId, parseInt(id)), eq(habitEntry.date, date)),
+        and(
+          eq(habitEntry.habitId, parseInt(id)),
+          eq(habitEntry.date, date)),
       )
       .returning();
 

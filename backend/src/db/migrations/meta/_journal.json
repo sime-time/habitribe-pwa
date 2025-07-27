@@ -36,6 +36,13 @@
       "when": 1753632114443,
       "tag": "0004_normal_thanos",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1753640245618,
+      "tag": "0005_typical_the_phantom",
+      "breakpoints": true
     }
   ]
 }
