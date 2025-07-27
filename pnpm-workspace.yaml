@@ -1,4 +1,11 @@
 packages:
-  - "pwa"
-  - "backend"
-  - "packages/*"
+  - pwa
+  - backend
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild
+  - sharp
+  - vue-demi
+  - workerd
