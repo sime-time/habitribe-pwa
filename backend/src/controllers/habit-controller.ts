@@ -95,8 +95,7 @@ export async function getUserHabitEntries(c: Context) {
       .from(habit)
       .where(eq(habit.userId, parseInt(userId)));
 
-    // for each habit id, get the habit entry with
-    // the corresponding date
+    // for each habit id, get the habit entry with the corresponding date
     const habitEntries = [];
     for (let i = 0; i < userHabitIds.length; i++) {
       const habitId = userHabitIds[i].id;

@@ -16,7 +16,12 @@
       "database_id": "32f2c660-7eaf-44a2-ae96-9fef0acdf007",
       "migrations_dir": "./src/db/migrations"
     }
-  ]
+  ],
+  "triggers": {
+    "crons": [
+      "5 0 * * *" // every day at 00:05 AM
+    ]
+  }
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
