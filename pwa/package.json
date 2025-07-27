@@ -1,0 +1,47 @@
+{
+  "name": "habitribe-pwa",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "biome": "pnpm exec biome format --write",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/vue-query": "^5.83.0",
+    "better-auth": "^1.2.12",
+    "chart.js": "^4.5.0",
+    "pinia": "^3.0.3",
+    "tailwindcss": "^4.1.11",
+    "vue": "^3.5.17",
+    "vue-chartjs": "^5.3.2",
+    "vue-router": "^4.5.1",
+    "vue-toastification": "2.0.0-rc.5",
+    "zod": "^4.0.5",
+    "@habitribe/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@iconify-json/solar": "^1.2.2",
+    "@iconify-json/tabler": "^1.2.19",
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^22.15.32",
+    "@vite-pwa/assets-generator": "^1.0.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/tsconfig": "^0.7.0",
+    "daisyui": "^5.0.46",
+    "npm-run-all2": "^8.0.4",
+    "typescript": "~5.8.0",
+    "unplugin-icons": "^22.1.0",
+    "vite": "npm:rolldown-vite@latest",
+    "vite-plugin-pwa": "^1.0.1",
+    "vite-plugin-vue-devtools": "^7.7.7",
+    "vue-tsc": "^2.2.10"
+  }
+}

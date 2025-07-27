@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: "ritual";
+}
+
+@plugin "daisyui/theme" {
+  name: "ritual";
+  default: true;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(37% 0.034 259.733);
+  --color-base-200: oklch(27% 0.033 256.848);
+  --color-base-300: oklch(21% 0.034 264.665);
+  --color-base-content: oklch(98% 0.002 247.839);
+  --color-primary: oklch(68% 0.23 27);
+  --color-primary-content: oklch(13% 0.028 261.692);
+  --color-secondary: oklch(85% 0.138 181.071);
+  --color-secondary-content: oklch(27% 0.046 192.524);
+  --color-accent: oklch(76% 0.188 70.08);
+  --color-accent-content: oklch(27% 0.077 45.635);
+  --color-neutral: oklch(13% 0.028 261.692);
+  --color-neutral-content: oklch(98% 0.002 247.839);
+  --color-info: oklch(78% 0.15 240);
+  --color-info-content: oklch(22% 0.04 240);
+  --color-success: oklch(79% 0.209 151.711);
+  --color-success-content: oklch(25% 0.05 150);
+  --color-warning: oklch(94% 0.129 101.54);
+  --color-warning-content: oklch(28% 0.066 53.813);
+  --color-error: oklch(57% 0.245 27.325);
+  --color-error-content: oklch(97% 0.013 17.38);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+html {
+  background-color: var(--color-base-300);
+}
+
+button {
+  touch-action: manipulation;
+  transition-property: opacity translate scale;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  transition-duration: 0.2s;
+}
+button:active {
+  opacity: 0.8;
+  transform: translateY(0.5px) scale(0.98);
+}
+/* the height of the dock is 4rem, make the bottom margin slightly taller */
+.mb-dock {
+  margin-bottom: 5rem;
+  margin-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+/* remove arrows from number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

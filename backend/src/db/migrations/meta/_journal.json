@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1752373525244,
+      "tag": "0000_sad_spitfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1752948085365,
+      "tag": "0001_black_hellcat",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1752958785797,
+      "tag": "0002_small_vision",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1752959771930,
+      "tag": "0003_colossal_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1753632114443,
+      "tag": "0004_normal_thanos",
+      "breakpoints": true
+    }
+  ]
+}
