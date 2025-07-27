@@ -18,7 +18,7 @@ const { user } = storeToRefs(authStore);
 const route = useRoute();
 const date = computed(() => {
   const dateFromQuery = route.query.date;
-  if (dateFromQuery && typeof dateFromQuery === 'string') {
+  if (dateFromQuery && typeof dateFromQuery === "string") {
     return dateFromQuery;
   }
 
@@ -29,31 +29,24 @@ const date = computed(() => {
 // fetch all the habits from this date
 async function fetchUserHabitEntries(dateString: string) {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/habit/user/${user.value?.id}/entries`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        date: dateString
-      }),
-    }
+    `${import.meta.env.VITE_API_URL}/api/habit/user/${user.value?.id}/entries?date=${dateString}`,
   );
 
   if (!response.ok) {
     throw new Error("Failed to fetch habits from server");
   }
 
-  return response.json();
+  return await response.json();
 }
 
 const { data, isLoading, isError, error } = useQuery({
-  queryKey: ["habits"],
-  queryFn: () => fetchUserHabitEntries(date.value),
+  queryKey: ["habits", date.value],
+  queryFn: async () => fetchUserHabitEntries(date.value),
 });
 </script>
 
 <template>
-  <HabitNavBar />
+  <HabitNavBar :date="date" />
   <main class="flex flex-col items-center gap-8 mt-12 px-[1rem] mb-dock">
     <HabitProgressTotal :percent="62" />
 
@@ -73,7 +66,7 @@ const { data, isLoading, isError, error } = useQuery({
         :name="habit.name"
         :value="habit.goalValue"
         :unit="habit.goalUnit"
-        :progress="49"
+        :progress="habit.progress"
       />
     </div>
   </main>

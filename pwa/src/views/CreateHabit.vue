@@ -89,7 +89,6 @@ async function onSubmit() {
 
     // back to the main habits view
     router.push("/");
-
   } catch (error) {
     console.error("Error creating new habit", error);
     if (error instanceof z.ZodError) {
