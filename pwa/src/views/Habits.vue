@@ -6,8 +6,8 @@ import HabitProgressTotal from "~/components/habit/HabitProgressTotal.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
-import { useQuery } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 
 // get the user id from auth store
@@ -26,29 +26,79 @@ const date = computed(() => {
   return new Date().toISOString().slice(0, 10);
 });
 
-// fetch all the habits from this date
+// fetch all the habit entries from this date
 async function fetchUserHabitEntries(dateString: string) {
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/habit/user/${user.value?.id}/entries?date=${dateString}`,
+    `${import.meta.env.VITE_API_URL}/api/habit/entries/user/${user.value?.id}?date=${dateString}`,
   );
 
   if (!response.ok) {
     throw new Error("Failed to fetch habits from server");
   }
-
   return await response.json();
 }
 
-const { data, isLoading, isError, error } = useQuery({
+const { data, isLoading, isError, error, refetch } = useQuery({
   queryKey: ["habits", date.value],
   queryFn: async () => fetchUserHabitEntries(date.value),
 });
+
+// update the progress of each habit entry
+const { mutate: mutateProgress } = useMutation({
+  mutationFn: (entry: { progress: number; habitId: number; date: string }) =>
+    fetch(
+      `${import.meta.env.VITE_API_URL}/api/habit/entries/update/${entry.habitId}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          progress: entry.progress,
+          date: entry.date,
+        }),
+      },
+    ),
+  onSuccess: () => refetch(),
+});
+
+function updateProgress(newProgress: number, habitId: number) {
+  mutateProgress({
+    progress: newProgress,
+    habitId: habitId,
+    date: date.value,
+  });
+}
+
+// compute the overall progress of habits
+const totalProgress = computed(() => {
+  if (!data.value || data.value.length === 0) {
+    return 0;
+  }
+
+  let goalSum = 0;
+  let progressSum = 0;
+  for (let i = 0; i < data.value.length; i++) {
+    goalSum += data.value[i].goalValue;
+    progressSum += data.value[i].progress;
+  }
+
+  if (goalSum === 0) {
+    return 0;
+  }
+
+  const result = Math.round(progressSum / goalSum * 100);
+
+  if (result > 100) {
+    return 100;
+  }
+
+  return result;
+});
+
 </script>
 
 <template>
   <HabitNavBar :date="date" />
   <main class="flex flex-col items-center gap-8 mt-12 px-[1rem] mb-dock">
-    <HabitProgressTotal :percent="62" />
+    <HabitProgressTotal :percent="totalProgress" />
 
     <div v-if="isLoading">
       <LoadingSpinner />
@@ -63,10 +113,12 @@ const { data, isLoading, isError, error } = useQuery({
       <HabitCard
         v-for="habit in data"
         :key="habit.id"
+        :id="habit.id"
         :name="habit.name"
-        :value="habit.goalValue"
+        :goal="habit.goalValue"
         :unit="habit.goalUnit"
         :progress="habit.progress"
+        @increment-progress="updateProgress"
       />
     </div>
   </main>

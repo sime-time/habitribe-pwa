@@ -4,9 +4,10 @@ import { createHabit, deleteHabit, getUserHabits, getUserHabitEntries, updateHab
 const router = new Hono();
 
 router.post("/create", createHabit);
+// router.post("/update/:id", updateHabit);
 router.delete("/delete/:id", deleteHabit);
 router.get("/user/:userId", getUserHabits);
-router.get("/user/:userId/entries", getUserHabitEntries);
-router.post("/entry/update/:id", updateHabitEntry);
+router.get("/entries/user/:userId", getUserHabitEntries);
+router.post("/entries/update/:id", updateHabitEntry);
 
 export default router;
