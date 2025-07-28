@@ -8,15 +8,22 @@ import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { useMutation, useQuery } from "@tanstack/vue-query";
-import { computed } from "vue";
+import { computed, watch, ref } from "vue";
+import { debounce } from "~/plugins/debounce";
 
-// get the user id from auth store
+// --- State Management ---
+
+const route = useRoute();
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
 
-// get the date query (YYYY-MM-DD)
-const route = useRoute();
+// this will hold the state of habits as they were last known by the server
+const lastSavedHabits = ref<any[]>([]);
+let debounceTimer: number | undefined;
+
+// --- Computed Date from URL Query ---
 const date = computed(() => {
+  // get the date query (YYYY-MM-DD)
   const dateFromQuery = route.query.date;
   if (dateFromQuery && typeof dateFromQuery === "string") {
     return dateFromQuery;
@@ -26,8 +33,10 @@ const date = computed(() => {
   return new Date().toISOString().slice(0, 10);
 });
 
-// fetch all the habit entries from this date
+// --- Data Fetching (useQuery) ---
+
 async function fetchUserHabitEntries(dateString: string) {
+  // fetch all the habit entries from this date
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/api/habit/entries/user/${user.value?.id}?date=${dateString}`,
   );
@@ -35,7 +44,12 @@ async function fetchUserHabitEntries(dateString: string) {
   if (!response.ok) {
     throw new Error("Failed to fetch habits from server");
   }
-  return await response.json();
+
+  // When data is fetched, create a deep copy for our snapshot.
+  const fetchedData = await response.json();
+  lastSavedHabits.value = JSON.parse(JSON.stringify(fetchedData));
+
+  return fetchedData;
 }
 
 const { data, isLoading, isError, error, refetch } = useQuery({
@@ -43,8 +57,10 @@ const { data, isLoading, isError, error, refetch } = useQuery({
   queryFn: async () => fetchUserHabitEntries(date.value),
 });
 
-// update the progress of each habit entry
+// --- Data Mutation (useMutation) ---
+
 const { mutate: mutateProgress } = useMutation({
+  // update the progress of each habit entry
   mutationFn: (entry: { progress: number; habitId: number; date: string }) =>
     fetch(
       `${import.meta.env.VITE_API_URL}/api/habit/entries/update/${entry.habitId}`,
@@ -56,18 +72,52 @@ const { mutate: mutateProgress } = useMutation({
         }),
       },
     ),
-  onSuccess: () => refetch(),
+  onSuccess: (result, variables) => {
+    // after a successful save, update our snapshot for the specific habit that was changed.
+    const habitInSnapshot = lastSavedHabits.value.find(h => h.id === variables.habitId);
+    if (habitInSnapshot) {
+      habitInSnapshot.progress = variables.progress;
+    }
+  },
+  onError: () => refetch(),
 });
 
-function updateProgress(newProgress: number, habitId: number) {
-  mutateProgress({
-    progress: newProgress,
-    habitId: habitId,
-    date: date.value,
+
+// this function is called by the debounced saver
+function saveChanges() {
+  if (!data.value || !lastSavedHabits.value) return;
+
+  // compare current data with the saved state
+  data.value.forEach((currentHabit: any) => {
+    const savedHabit = lastSavedHabits.value.find((h: any) => h.id === currentHabit.id);
+
+    // if progress is different, this habit needs to be updated
+    if (savedHabit && currentHabit.progress !== savedHabit.progress) {
+      mutateProgress({
+        progress: currentHabit.progress,
+        habitId: currentHabit.id,
+        date: date.value,
+      });
+    }
   });
 }
 
-// compute the overall progress of habits
+function updateProgress(newProgress: number, habitId: number) {
+  // optimistic UI update
+  if (!data.value) return;
+  const habit = data.value.find((h: any) => h.id === habitId);
+  if (habit) {
+    habit.progress = newProgress;
+  }
+
+  // debounce the saveChanges function
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    saveChanges();
+  }, 800); // milisecond delay
+}
+
+// --- UI Computed Properties ---
 const totalProgress = computed(() => {
   if (!data.value || data.value.length === 0) {
     return 0;

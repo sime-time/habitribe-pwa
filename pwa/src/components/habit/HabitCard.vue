@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { divide } from "~/plugins/divide";
+import { haptic } from "~/plugins/haptic";
 
 const props = defineProps<{
   id: number;
@@ -17,6 +18,7 @@ const progressValue = computed(() => divide(progressPercent.value, incrementAmou
 
 const emit = defineEmits(["incrementProgress"])
 function increment() {
+  haptic();
   progressPercent.value += incrementAmount.value;
   emit("incrementProgress", progressValue.value, props.id);
 }
