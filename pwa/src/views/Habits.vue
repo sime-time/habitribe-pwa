@@ -127,7 +127,9 @@ const totalProgress = computed(() => {
   let progressSum = 0;
   for (let i = 0; i < data.value.length; i++) {
     goalSum += data.value[i].goalValue;
-    progressSum += data.value[i].progress;
+    // cap the contribution of each habit to the total progress calculation
+    // this ensures that overachieving one habit doesn't inflate the overall percentage
+    progressSum += Math.min(data.value[i].progress, data.value[i].goalValue);
   }
 
   if (goalSum === 0) {
