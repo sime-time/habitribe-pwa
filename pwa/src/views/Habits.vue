@@ -10,6 +10,7 @@ import { useRoute } from "vue-router";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { computed, watch, ref } from "vue";
 import { debounce } from "~/plugins/debounce";
+import HabitOptions from "~/components/habit/HabitOptions.vue";
 
 // --- State Management ---
 
@@ -170,7 +171,7 @@ const totalProgress = computed(() => {
         :goal="habit.goalValue"
         :unit="habit.goalUnit"
         :progress="habit.progress"
-        @increment-progress="updateProgress"
+        @update-progress="updateProgress"
       />
     </div>
   </main>
