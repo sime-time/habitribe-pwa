@@ -29,6 +29,12 @@ function increment() {
 function decrement() {
   haptic();
   progressPercent.value -= incrementAmount.value;
+
+  // progress cannot be negative
+  if (progressPercent.value < 0) {
+    progressPercent.value = 0;
+  }
+
   emit("updateProgress", progressValue.value, props.id)
 }
 
