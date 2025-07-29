@@ -10,13 +10,13 @@
     "d1:remote": "pnpm dlx wrangler d1 execute tribes-db --remote --file"
   },
   "dependencies": {
+    "@habitribe/shared-types": "workspace:*",
     "better-auth": "^1.2.12",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.8.4",
     "resend": "^4.6.0",
     "typescript": "^5.8.3",
-    "zod": "^4.0.5",
-    "@habitribe/shared-types": "workspace:*"
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250709.0",

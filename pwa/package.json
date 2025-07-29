@@ -13,18 +13,20 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@habitribe/shared-types": "workspace:*",
+    "@internationalized/date": "^3.8.2",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/vue-query": "^5.83.0",
     "better-auth": "^1.2.12",
     "chart.js": "^4.5.0",
     "pinia": "^3.0.3",
+    "reka-ui": "^2.4.0",
     "tailwindcss": "^4.1.11",
     "vue": "^3.5.17",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1",
     "vue-toastification": "2.0.0-rc.5",
-    "zod": "^4.0.5",
-    "@habitribe/shared-types": "workspace:*"
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

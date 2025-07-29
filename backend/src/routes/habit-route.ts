@@ -1,5 +1,12 @@
 import { Hono } from "hono";
-import { createHabit, deleteHabit, getUserHabits, getUserHabitEntries, updateHabitEntry } from "../controllers/habit-controller";
+import {
+  createHabit,
+  deleteHabit,
+  getUserHabits,
+  getUserHabitEntries,
+  updateHabitEntry,
+  getUserProgress
+} from "../controllers/habit-controller";
 
 const router = new Hono();
 
@@ -9,5 +16,7 @@ router.delete("/delete/:id", deleteHabit);
 router.get("/user/:userId", getUserHabits);
 router.get("/entries/user/:userId", getUserHabitEntries);
 router.post("/entries/update/:id", updateHabitEntry);
+router.get("/progress/user/:userId", getUserProgress);
+// router.get("/progress/:id", getHabitProgress);
 
 export default router;

@@ -10,8 +10,7 @@ export const HabitSchema = z.object({
     "Goal unit must be in minutes or count",
   ),
   schedule: z.object({
-    type: z.string().min(1), // "daily" or "weekly"
-    days: z.array(z.number()).optional(),
+    days: z.array(z.number()),
   }),
   reminderEnabled: z.boolean().default(false),
   reminderTime: z.string().optional(),

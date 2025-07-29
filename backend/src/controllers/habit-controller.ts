@@ -117,11 +117,8 @@ export async function getUserHabitEntries(c: Context) {
 
     const activeHabits = allUserHabits.filter(h => {
       // filter() only keeps the elements for which the callback returns 'true'
-      const schedule = h.schedule as { type: string; days?: number[] };
-      if (schedule.type === "daily") {
-        return true;
-      }
-      if (schedule.type === "weekly" && schedule.days?.includes(dayOfWeek)) {
+      const schedule = h.schedule as { days: number[] };
+      if (schedule.days.includes(dayOfWeek)) {
         return true;
       }
       return false;
@@ -221,4 +218,8 @@ export async function updateHabitEntry(c: Context) {
     console.error("Error updating habit entry", error);
     return c.json({ error: "Something went wrong" }, 500);
   }
+}
+
+export async function getUserProgress(c: Context) {
+  return
 }

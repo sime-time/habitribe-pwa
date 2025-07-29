@@ -14,8 +14,8 @@ export const habit = sqliteTable("habit", {
   goalUnit: text("goal_unit").notNull(), // could be anything: minutes, hours, count, pages, etc.
 
   // Flexible scheduling
-  // e.g. { "type": "daily" , "days": [0,1,2,3,4,5,6] }
-  // or { "type": "weekly", "days": [1,3,5] }
+  // e.g. { "days": [0,1,2,3,4,5,6] }
+  // or { "days": [1,3,5] }
   schedule: text("schedule", { mode: "json" }).notNull(),
 
   // Reminder settings

@@ -6,8 +6,9 @@ import SignIn from "~/views/(auth)/SignIn.vue";
 import SignUp from "~/views/(auth)/SignUp.vue";
 import VerifyEmail from "~/views/(auth)/VerifyEmail.vue";
 import Tribe from "~/views/Tribe.vue";
-import Stats from "~/views/Stats.vue";
 import CreateHabit from "~/views/CreateHabit.vue";
+import OverallHistory from "~/views/(history)/OverallHistory.vue";
+import HabitHistory from "~/views/(history)/HabitHistory.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,9 +39,14 @@ const router = createRouter({
       component: Tribe,
     },
     {
-      path: "/stats",
-      name: "stats",
-      component: Stats,
+      path: "/history",
+      name: "history",
+      component: OverallHistory,
+    },
+    {
+      path: "/history/habits",
+      name: "history-habits",
+      component: HabitHistory,
     },
     {
       path: "/create-habit",

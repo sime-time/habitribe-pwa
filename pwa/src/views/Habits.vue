@@ -2,7 +2,7 @@
 import TabDock from "~/components/TabDock.vue";
 import HabitNavBar from "~/components/habit/HabitNavBar.vue";
 import HabitCard from "~/components/habit/HabitCard.vue";
-import HabitProgressTotal from "~/components/habit/HabitProgressTotal.vue";
+import HabitTotalProgress from "~/components/habit/HabitTotalProgress.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
@@ -149,7 +149,7 @@ const totalProgress = computed(() => {
 <template>
   <HabitNavBar :date="date" />
   <main class="flex flex-col items-center gap-8 mt-12 px-[1rem] mb-dock">
-    <HabitProgressTotal :percent="totalProgress" />
+    <HabitTotalProgress :percent="totalProgress" />
 
     <div v-if="isLoading">
       <LoadingSpinner />

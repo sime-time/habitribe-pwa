@@ -23,13 +23,13 @@ const habit = reactive({
 });
 
 const week = reactive({
-  sunday: { value: 0, enabled: true, label: "S" },
-  monday: { value: 1, enabled: true, label: "M" },
-  tuesday: { value: 2, enabled: true, label: "T" },
-  wednesday: { value: 3, enabled: true, label: "W" },
-  thursday: { value: 4, enabled: true, label: "T" },
-  friday: { value: 5, enabled: true, label: "F" },
-  saturday: { value: 6, enabled: true, label: "S" },
+  sunday: { value: 0, enabled: true, label: "Su" },
+  monday: { value: 1, enabled: true, label: "Mo" },
+  tuesday: { value: 2, enabled: true, label: "Tu" },
+  wednesday: { value: 3, enabled: true, label: "We" },
+  thursday: { value: 4, enabled: true, label: "Th" },
+  friday: { value: 5, enabled: true, label: "Fr" },
+  saturday: { value: 6, enabled: true, label: "Sa" },
 });
 
 // returns true if all days in the week are enabled
@@ -62,7 +62,6 @@ async function onSubmit() {
       userId: user.value?.id,
       ...habit,
       schedule: {
-        type: type,
         days: days,
       },
     });
@@ -197,8 +196,8 @@ async function onSubmit() {
               type="checkbox"
               :aria-label="day.label"
               v-model="day.enabled"
-              :class="day.enabled ? 'bg-primary' : 'bg-base-100'"
-              class="btn btn-circle text-neutral-content text-xl"
+              :class="day.enabled ? 'bg-primary' : 'bg-base-100 opacity-50'"
+              class="btn btn-circle text-neutral-content text-lg font-medium"
             />
           </template>
         </div>
