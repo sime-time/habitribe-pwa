@@ -8,9 +8,7 @@ import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { useMutation, useQuery } from "@tanstack/vue-query";
-import { computed, watch, ref } from "vue";
-import { debounce } from "~/plugins/debounce";
-import HabitOptions from "~/components/habit/HabitOptions.vue";
+import { computed, ref } from "vue";
 
 // --- State Management ---
 
