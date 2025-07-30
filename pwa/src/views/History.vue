@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import NavBar from "~/components/NavBar.vue";
 import TabDock from "~/components/TabDock.vue";
 import HistoryCalendar from "~/components/HistoryCalendar.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
@@ -40,7 +39,6 @@ const { data: dailyProgress, isLoading } = useQuery({
 </script>
 
 <template>
-  <NavBar title="Habit History" />
   <main class="flex flex-col items-center justify-center gap-8 mb-dock">
     <div v-if="isLoading">
       <LoadingSpinner />

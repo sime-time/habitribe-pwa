@@ -5,6 +5,7 @@ import { getLocalTimeZone, toCalendarDate, today } from "@internationalized/date
 import IconArrowLeft from "~icons/tabler/arrow-left";
 import IconArrowRight from "~icons/tabler/arrow-right";
 import { RouterLink } from "vue-router";
+import NavBar from "~/components/NavBar.vue";
 import {
   CalendarCell,
   CalendarCellTrigger,
@@ -47,34 +48,24 @@ function selectDate(date: DateValue | undefined) {
   <CalendarRoot
     v-slot="{ weekDays, grid }"
     :model-value="date"
-    weekday-format="short"
+    weekday-format="narrow"
     :locale="locale"
     :max-value="todayDate"
-    class="inline-block w-full my-8 p-2"
+    class="inline-block w-full"
     @update:model-value="selectDate"
   >
     <!-- Header section -->
-    <CalendarHeader class="flex justify-between items-center mb-4">
-      <CalendarPrev
-        class="btn btn-circle"
-        @click="haptic()"
-      >
-        <IconArrowLeft class="size-5" />
-      </CalendarPrev>
-      <CalendarHeading class="font-semibold text-lg" />
-      <CalendarNext
-        class="btn btn-circle"
-        @click="haptic()"
-      >
-        <IconArrowRight class="size-5" />
-      </CalendarNext>
+    <CalendarHeader class="flex justify-center items-center mb-4">
+      <NavBar>
+        <CalendarHeading class="text-xl font-semibold" />
+      </NavBar>
     </CalendarHeader>
 
     <!-- Loop through each month provided by CalendarRoot's grid -->
     <CalendarGrid
       v-for="month in grid"
       :key="month.value.toString()"
-      class="w-full text-xs md:text-base"
+      class="max-w-screen  text-xs md:text-base mx-auto"
     >
 
       <!-- Loop through weekday names provided by CalendarRoot -->
@@ -109,7 +100,7 @@ function selectDate(date: DateValue | undefined) {
               @click="haptic()"
             >
               <div
-                class="flex items-center justify-center my-2"
+                class="flex items-center justify-center my-2 mx-1"
                 :class="cellProps.outsideView ? 'hidden' : ''"
               >
                 <div
@@ -128,5 +119,21 @@ function selectDate(date: DateValue | undefined) {
         </CalendarGridRow>
       </CalendarGridBody>
     </CalendarGrid>
+    <div class="flex items-center justify-evenly mt-4">
+      <CalendarPrev
+        class="btn btn-circle btn-lg"
+        @click="haptic()"
+      >
+        <IconArrowLeft class="size-5" />
+      </CalendarPrev>
+      <CalendarNext
+        class="btn btn-circle btn-lg"
+        @click="haptic()"
+      >
+        <IconArrowRight class="size-5" />
+      </CalendarNext>
+    </div>
   </CalendarRoot>
+
+
 </template>

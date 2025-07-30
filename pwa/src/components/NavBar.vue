@@ -7,7 +7,6 @@ import SettingsDropdown from "./SettingsDropdown.vue";
 
 const props = defineProps<{
   date?: string;
-  title?: string;
 }>();
 
 const formattedDate = computed(() => {
@@ -30,7 +29,11 @@ const formattedDate = computed(() => {
     </div>
 
     <div class="navbar-center">
-      <h1 class="text-xl font-semibold">{{ date ? formattedDate : title }}</h1>
+      <h1
+        v-if="date"
+        class="text-xl font-semibold"
+      >{{ formattedDate }}</h1>
+      <slot v-else />
     </div>
 
     <div class="navbar-end">
