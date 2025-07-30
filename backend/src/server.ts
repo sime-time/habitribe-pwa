@@ -1,9 +1,10 @@
-import { Env, Hono } from "hono";
+import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { auth } from "./lib/auth";
 import { CloudflareBindings } from "./config/bindings";
 import habitRoute from "./routes/habit-route";
 import { createDailyHabitEntries } from "./lib/cron";
+
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -27,7 +28,7 @@ app.on(["GET", "POST"], "/api/auth/*", (c) => {
 });
 
 // habit route
-app.route("/api/habit", habitRoute)
+app.route("/habit", habitRoute)
 
 app.get("/", (c) => {
   return c.text("Hello Hono");
@@ -37,13 +38,12 @@ app.get("/api/health", (c) => {
   return c.json({ success: c.env.CLIENT_ORIGIN_URL })
 });
 
+
 // cron job
 export default {
   fetch: app.fetch,
   async scheduled(
-    controller: ScheduledController,
     env: CloudflareBindings,
-    ctx: ExecutionContext
   ) {
     await createDailyHabitEntries(env)
   }

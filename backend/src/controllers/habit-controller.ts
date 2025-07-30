@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { habit, habitEntry } from "../db/schema";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, sql, like, sum } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { HabitSchema, HabitEntrySchema } from "@habitribe/shared-types";
 import { ZodError } from "zod";
@@ -190,8 +190,8 @@ export async function getUserHabitEntries(c: Context) {
 }
 
 export async function updateHabitEntry(c: Context) {
-  const { id } = c.req.param();
   try {
+    const { id } = c.req.param();
     const body = await c.req.json();
     const { date, progress } = HabitEntrySchema.parse(body);
 
@@ -220,6 +220,74 @@ export async function updateHabitEntry(c: Context) {
   }
 }
 
+// calculate the total progress percentage for each day in the requested month
+// example json response return:
+// {
+// "2025-07-01": 85,
+// "2025-07-02": 100,
+// "2025-07-03": 50,
+// "2025-07-04": 0,
+// "2025-07-05": 75
+// }
 export async function getUserProgress(c: Context) {
-  return
+  try {
+    const { userId } = c.req.param();
+
+    const month = c.req.query("month"); // YYYY-MM
+    if (!month) {
+      return c.json({ error: "Month query parameter is required" }, 400);
+    }
+
+    const db = drizzle(c.env.DB)
+
+    const allUserHabits = await db
+      .select()
+      .from(habit)
+      .where(eq(habit.userId, parseInt(userId)));
+
+    const userHabitIds: number[] = allUserHabits.map(h => h.id);
+
+    const dailyGoalProgress = await db
+      .select({
+        date: habitEntry.date,
+        goal: sum(habitEntry.goal),
+        // progress could be higher than goal
+        // prevent overachievement in one habit from skewing the total percentage
+        cappedProgress: sql<string>`sum(min(${habitEntry.progress}, ${habitEntry.goal}))`,
+        /* SQLITE: The multi-argument min() function returns the argument with the minimum value. The multi-argument min() function searches its arguments from left to right for an argument that defines a collating function and uses that collating function for all string comparisons. If none of the arguments to min() define a collating function, then the BINARY collating function is used. Note that min() is a simple function when it has 2 or more arguments but operates as an aggregate function if given only a single argument.
+        */
+      })
+      .from(habitEntry)
+      .where(
+        and(
+          inArray(habitEntry.habitId, userHabitIds),
+          like(habitEntry.date, `${month}%`)
+        ))
+      .groupBy(habitEntry.date);
+
+    // use .reduce() to transform array into object
+    const totalProgressPerDay = dailyGoalProgress.reduce((accumulator, entry) => {
+      // convert strings to number
+      const totalProgress = parseFloat(entry.cappedProgress);
+      const totalGoal = parseFloat(entry.goal || "0");
+
+      // avoid division by zero
+      if (totalGoal === 0) {
+        throw new Error("Cannot divide by zero");
+      }
+      const percentage: number = Math.round((totalProgress / totalGoal) * 100);
+
+      if (entry.date !== null) {
+        accumulator[entry.date] = percentage;
+      }
+      return accumulator; // returns object: { entry.date: percentage }
+
+    }, {} as Record<string, number>)
+
+    return c.json(totalProgressPerDay, 200);
+
+  } catch (error) {
+    console.error("getUserProgress Error:", error);
+    return c.json({ error: "Something went wrong" }, 500);
+  }
 }
