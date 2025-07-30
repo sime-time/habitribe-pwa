@@ -11,14 +11,14 @@ const emit = defineEmits(["update"]);
 
 <template>
   <div class="flex flex-col items-center text-center">
-    <h3 class="font-bold">Update Available!</h3>
+    <h3 class="font-bold text-lg">Update Available!</h3>
     <p class="text-sm">A new version of Habitribe has been downloaded.</p>
-    <div class="mt-4 flex gap-4">
+    <div class="mt-3 flex gap-4">
       <button
-        class="btn btn-sm btn-primary"
+        class="btn btn-sm btn-neutral"
         @click="emit('update')"
       >
-        <IconRefresh class="mr-2" />
+        <IconRefresh />
         Reload
       </button>
       <button

@@ -8,7 +8,23 @@ import UpdatePrompt from "./components/UpdatePrompt.vue";
 const toast = useToast();
 
 const { needRefresh, updateServiceWorker } = useRegisterSW();
-
+toast.info(
+  {
+    component: UpdatePrompt,
+    listeners: { // listen for emits
+      update: () => {
+        // when user clicks "Reload", update the service worker
+        updateServiceWorker();
+      },
+    },
+  },
+  {
+    // toast options
+    timeout: false, // don't auto-close this toast
+    icon: false, // disable default icon
+    closeButton: false,
+  }
+);
 // watch for the needRefresh state to change
 watch(needRefresh, (isNeeded) => {
   if (isNeeded) {
@@ -27,6 +43,7 @@ watch(needRefresh, (isNeeded) => {
         // toast options
         timeout: false, // don't auto-close this toast
         icon: false, // disable default icon
+        closeButton: false,
       }
     );
   }
