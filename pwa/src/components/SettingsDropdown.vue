@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSettings from "~icons/tabler/settings";
+import IconSettings from "~icons/solar/settings-outline";
 import IconLogout from "~icons/tabler/logout-2";
 import IconUser from "~icons/solar/user-circle-outline";
 import IconAdjust from "~icons/tabler/adjustments-horizontal";
@@ -16,14 +16,14 @@ async function handleSignOut() {
 
 <template>
   <div class="dropdown">
-    <button
+    <div
       tabindex="0"
       role="button"
       class="btn btn-ghost btn-circle"
       @click="() => haptic()"
     >
       <icon-settings style="font-size: 1.5em" />
-    </button>
+    </div>
     <ul
       tabindex="0"
       class="menu menu-lg dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-3 shadow space-y-3"
