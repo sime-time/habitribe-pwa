@@ -4,6 +4,7 @@ import { haptic } from "~/plugins/haptic";
 import { getLocalTimeZone, toCalendarDate, today } from "@internationalized/date";
 import IconArrowLeft from "~icons/tabler/arrow-left";
 import IconArrowRight from "~icons/tabler/arrow-right";
+import { RouterLink } from "vue-router";
 import {
   CalendarCell,
   CalendarCellTrigger,
@@ -19,9 +20,7 @@ import {
   CalendarRoot,
 } from "reka-ui";
 
-const props = defineProps<{
-  date: DateValue;
-}>();
+const date = toCalendarDate(today(getLocalTimeZone()));
 
 // Tell Vue what events this component can "emit" (send out).
 // Here, we say we can send an 'dateSelected' event,
