@@ -68,7 +68,7 @@ async function onSubmit() {
 
     // insert the new habit into the database
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/habit/create`,
+      `${import.meta.env.VITE_API_URL}/habit/create`,
       {
         method: "POST",
         headers: {
