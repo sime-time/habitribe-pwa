@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import HistoryNavBar from "~/components/history/HistoryNavBar.vue";
+import NavBar from "~/components/NavBar.vue";
 import TabDock from "~/components/TabDock.vue";
-import HistoryCalendar from "~/components/history/HistoryCalendar.vue";
+import HistoryCalendar from "~/components/HistoryCalendar.vue";
 import { toCalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 
 
@@ -10,7 +10,7 @@ const todayDate = toCalendarDate(today(getLocalTimeZone()));
 </script>
 
 <template>
-  <HistoryNavBar tab="overall" />
+  <NavBar title="Habit History" />
   <main class="flex flex-col items-center justify-center gap-8 mb-dock">
     <HistoryCalendar
       :date="todayDate"

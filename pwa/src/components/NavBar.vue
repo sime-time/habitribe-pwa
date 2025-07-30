@@ -3,14 +3,15 @@ import IconPlus from "~icons/tabler/plus";
 import { RouterLink } from "vue-router";
 import { haptic } from "~/plugins/haptic";
 import { computed } from "vue";
-import SettingsDropdown from "../SettingsDropdown.vue";
+import SettingsDropdown from "./SettingsDropdown.vue";
 
 const props = defineProps<{
-  date: string;
+  date?: string;
+  title?: string;
 }>();
 
 const formattedDate = computed(() => {
-  const dateObj = new Date(props.date);
+  const dateObj = new Date(props.date!);
   return dateObj.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -29,7 +30,7 @@ const formattedDate = computed(() => {
     </div>
 
     <div class="navbar-center">
-      <a class="text-xl font-semibold">{{ formattedDate }}</a>
+      <h1 class="text-xl font-semibold">{{ date ? formattedDate : title }}</h1>
     </div>
 
     <div class="navbar-end">

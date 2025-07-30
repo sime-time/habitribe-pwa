@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TabDock from "~/components/TabDock.vue";
-import HabitNavBar from "~/components/habit/HabitNavBar.vue";
+import NavBar from "~/components/NavBar.vue";
 import HabitCard from "~/components/habit/HabitCard.vue";
 import HabitTotalProgress from "~/components/habit/HabitTotalProgress.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
@@ -147,7 +147,7 @@ const totalProgress = computed(() => {
 </script>
 
 <template>
-  <HabitNavBar :date="date" />
+  <NavBar :date="date" />
   <main class="flex flex-col items-center gap-8 mt-12 px-[1rem] mb-dock">
     <HabitTotalProgress :percent="totalProgress" />
 

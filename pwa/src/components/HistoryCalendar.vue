@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DateValue } from "@internationalized/date";
+import { haptic } from "~/plugins/haptic";
 import { getLocalTimeZone, toCalendarDate, today } from "@internationalized/date";
 import IconArrowLeft from "~icons/tabler/arrow-left";
 import IconArrowRight from "~icons/tabler/arrow-right";
@@ -55,11 +56,17 @@ function selectDate(date: DateValue | undefined) {
   >
     <!-- Header section -->
     <CalendarHeader class="flex justify-between items-center mb-4">
-      <CalendarPrev class="btn btn-circle">
+      <CalendarPrev
+        class="btn btn-circle"
+        @click="haptic()"
+      >
         <IconArrowLeft class="size-5" />
       </CalendarPrev>
       <CalendarHeading class="font-semibold text-lg" />
-      <CalendarNext class="btn btn-circle">
+      <CalendarNext
+        class="btn btn-circle"
+        @click="haptic()"
+      >
         <IconArrowRight class="size-5" />
       </CalendarNext>
     </CalendarHeader>
@@ -100,6 +107,7 @@ function selectDate(date: DateValue | undefined) {
               v-slot="cellProps"
               :day="weekDate"
               :month="month.value"
+              @click="haptic()"
             >
               <div
                 class="flex items-center justify-center my-2"
