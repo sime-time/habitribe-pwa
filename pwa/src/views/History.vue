@@ -23,7 +23,7 @@ const monthQuery = computed(() => focusedDate.value.toString().slice(0, 7));
 const { data: dailyProgress, isLoading } = useQuery({
   queryKey: ["habitProgress", monthQuery],
   queryFn: async () => {
-    const response = await fetch(`/habit/progress/user/${user.value?.id}?month=${monthQuery.value}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/habit/progress/user/${user.value?.id}?month=${monthQuery.value}`);
     if (!response.ok) {
       throw new Error("Failed to fetch habit progress from server");
     }
