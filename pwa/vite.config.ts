@@ -7,6 +7,11 @@ import Icons from "unplugin-icons/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "~": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   plugins: [
     vue(),
     vueDevTools(),
@@ -14,7 +19,7 @@ export default defineConfig({
     Icons(),
     VitePWA({
       injectRegister: "auto",
-      registerType: "autoUpdate",
+      registerType: "prompt",
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp}"],
       },
@@ -57,9 +62,5 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: {
-    alias: {
-      "~": fileURLToPath(new URL("./src", import.meta.url)),
-    },
-  },
+
 });
