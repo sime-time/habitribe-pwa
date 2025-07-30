@@ -148,7 +148,7 @@ const totalProgress = computed(() => {
 
 <template>
   <NavBar :date="date" />
-  <main class="flex flex-col items-center gap-8 mt-12 px-[1rem] mb-dock">
+  <main class="flex flex-col items-center gap-8 mt-3 px-[1rem] mb-dock">
     <HabitTotalProgress :percent="totalProgress" />
 
     <div v-if="isLoading">

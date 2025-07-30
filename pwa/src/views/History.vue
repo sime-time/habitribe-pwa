@@ -29,13 +29,11 @@ const { data: dailyProgress, isLoading } = useQuery({
     const data = await response.json();
 
     // convert the json object into a Map for efficient lookups
-    return new Map(Object.entries(data));
+    return new Map<string, number>(Object.entries(data));
   },
   // show old data while fetching new data (prevents UI flickers)
   placeholderData: keepPreviousData,
-})
-
-
+});
 </script>
 
 <template>
@@ -46,7 +44,6 @@ const { data: dailyProgress, isLoading } = useQuery({
 
     <HistoryCalendar
       v-else-if="dailyProgress"
-      :focused-value="focusedDate"
       :daily-progress="dailyProgress"
     />
   </main>

@@ -21,38 +21,61 @@ import {
   CalendarRoot,
 } from "reka-ui";
 
-const date = toCalendarDate(today(getLocalTimeZone()));
-
-// Tell Vue what events this component can "emit" (send out).
-// Here, we say we can send an 'dateSelected' event,
-// and it will come with a 'DateValue'.
-const emit = defineEmits<{
-  (e: "dateSelected", date: DateValue): void;
+const props = defineProps<{
+  dailyProgress: Map<string, number>;
 }>();
 
 const locale = typeof navigator !== "undefined" ? navigator.language : "en-US";
 const timeZone = getLocalTimeZone();
 const todayDate: DateValue = toCalendarDate(today(timeZone));
 
+function isToday(date: DateValue) {
+  return date.compare(todayDate) === 0;
+}
 
-// function that sends the date (emits the event) to the parent component
-function selectDate(date: DateValue | undefined) {
-  if (date) {
-    emit("dateSelected", date);
+function getProgressForDate(date: DateValue) {
+  const dateString = date.toString();
+  return props.dailyProgress.get(dateString) ?? 0;
+}
+
+function getProgressColor(date: DateValue) {
+  const dateString = date.toString();
+  const progress = props.dailyProgress.get(dateString) ?? 0;
+
+  let classStr: string = "";
+
+  if (progress >= 100) {
+    classStr = "text-success";
+  } else if (progress <= 0) {
+    classStr = "text-transparent";
+  } else {
+    classStr = "text-primary";
   }
-};
+
+  if (isToday(date)) {
+    classStr = classStr.concat(" ", "bg-neutral-content")
+  }
+  return classStr;
+}
+
+function formatDate(date: DateValue) {
+  // format date to YYYY-MM-DD
+  const year = date.year
+  const month = date.month.toString().padStart(2, "0");
+  const day = date.day.toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}`
+}
 </script>
 
 <template>
   <!-- The main container, manages state and provides data via v-slot -->
   <CalendarRoot
     v-slot="{ weekDays, grid }"
-    :model-value="date"
     weekday-format="narrow"
     :locale="locale"
     :max-value="todayDate"
     class="inline-block w-full"
-    @update:model-value="selectDate"
   >
     <!-- Header section -->
     <CalendarHeader class="flex justify-center items-center mb-4">
@@ -99,26 +122,29 @@ function selectDate(date: DateValue | undefined) {
               :month="month.value"
               @click="haptic()"
             >
-              <div
+              <RouterLink
+                :to="`/?date=${formatDate(weekDate)}`"
                 class="flex items-center justify-center my-2 mx-1"
                 :class="cellProps.outsideView ? 'hidden' : ''"
               >
                 <div
-                  class="radial-progress border border-base-100"
-                  :class="true ? 'text-success' : 'text-primary'"
-                  :style="`--value:${10}; --size:2.4rem; --thickness:0.25rem`"
-                  :aria-valuenow="10"
+                  class="radial-progress border border-base-100 font-semibold text-sm"
+                  :class="getProgressColor(weekDate)"
+                  :style="`--value:${getProgressForDate(weekDate)}; --size:2.4rem; --thickness:0.30rem`"
                   role="progressbar"
                 >
-                  <span class="font-semibold text-sm text-neutral-content">{{ cellProps.dayValue }}</span>
+                  <span :class="isToday(weekDate) ? 'text-neutral' : 'text-neutral-content'">
+                    {{ cellProps.dayValue }}
+                  </span>
                 </div>
 
-              </div>
+              </RouterLink>
             </CalendarCellTrigger>
           </CalendarCell>
         </CalendarGridRow>
       </CalendarGridBody>
     </CalendarGrid>
+
     <div class="flex items-center justify-evenly mt-4">
       <CalendarPrev
         class="btn btn-circle btn-lg"
