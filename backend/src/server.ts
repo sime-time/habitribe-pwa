@@ -5,7 +5,6 @@ import { CloudflareBindings } from "./config/bindings";
 import habitRoute from "./routes/habit-route";
 import { createDailyHabitEntries } from "./lib/cron";
 
-
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
 // cors middleware
@@ -43,7 +42,9 @@ app.get("/api/health", (c) => {
 export default {
   fetch: app.fetch,
   async scheduled(
+    controller: ScheduledController,
     env: CloudflareBindings,
+    ctx: ExecutionContext,
   ) {
     await createDailyHabitEntries(env)
   }
