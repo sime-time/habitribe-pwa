@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { DateValue } from "@internationalized/date";
 import { haptic } from "~/plugins/haptic";
-import { getLocalTimeZone, toCalendarDate, today } from "@internationalized/date";
+import router from "~/router";
+import { CalendarDate, getLocalTimeZone, toCalendarDate, today } from "@internationalized/date";
+import { RouterLink } from "vue-router";
+import { ref, onMounted, useTemplateRef, computed } from "vue";
+import { useSwipe } from "@vueuse/core";
 import IconArrowLeft from "~icons/tabler/arrow-left";
 import IconArrowRight from "~icons/tabler/arrow-right";
-import { RouterLink } from "vue-router";
 import NavBar from "~/components/NavBar.vue";
 import {
   CalendarCell,
@@ -23,7 +26,15 @@ import {
 
 const props = defineProps<{
   dailyProgress: Map<string, number>;
+  initialMonth?: string;
 }>();
+
+const initialMonthToDate = computed(() => {
+  if (props.initialMonth) {
+    const [year, month] = props.initialMonth.split("-").map(Number);
+    return new CalendarDate(year, month, 1);
+  }
+})
 
 const locale = typeof navigator !== "undefined" ? navigator.language : "en-US";
 const timeZone = getLocalTimeZone();
@@ -66,15 +77,61 @@ function formatDate(date: DateValue) {
 
   return `${year}-${month}-${day}`
 }
+
+// --- Handle Month Changes ---
+const calendarRef = useTemplateRef("calendarRef");
+const focusedDate = ref(toCalendarDate(today(getLocalTimeZone())));
+
+// emit the focused month to the parent
+// so the parent can fetch the correct data
+const emit = defineEmits(["month-update"]);
+
+function handleMonthUpdate() {
+  const year = focusedDate.value.year
+  const month = focusedDate.value.month.toString().padStart(2, "0");
+  emit("month-update", `${year}-${month}`);
+}
+
+function nextMonth() {
+  haptic();
+  focusedDate.value = focusedDate.value.add({ months: 1 }).copy();
+  handleMonthUpdate();
+}
+function prevMonth() {
+  haptic();
+  focusedDate.value = focusedDate.value.subtract({ months: 1 }).copy();
+  handleMonthUpdate();
+}
+
+// use swipe gestures to go to next and prev months
+onMounted(() => {
+  if (calendarRef.value) {
+    useSwipe(calendarRef.value.$el, {
+      onSwipeEnd(_e, direction) {
+        if (direction === 'none') {
+          return
+        }
+        else if (["down", "right"].includes(direction)) {
+          prevMonth();
+        }
+        else {
+          nextMonth();
+        }
+      }
+    })
+  }
+});
 </script>
 
 <template>
   <!-- The main container, manages state and provides data via v-slot -->
   <CalendarRoot
+    ref="calendarRef"
     v-slot="{ weekDays, grid }"
     weekday-format="narrow"
     :locale="locale"
     :max-value="todayDate"
+    :placeholder="initialMonthToDate"
     class="inline-block w-full"
   >
     <!-- Header section -->
@@ -127,6 +184,7 @@ function formatDate(date: DateValue) {
                 class="flex items-center justify-center my-2 mx-1"
                 :class="cellProps.outsideView ? 'hidden' : ''"
               >
+                <!-- Day Radial Progress -->
                 <div
                   class="radial-progress border border-base-100 font-semibold text-sm"
                   :class="getProgressColor(weekDate)"
@@ -148,13 +206,13 @@ function formatDate(date: DateValue) {
     <div class="flex items-center justify-evenly mt-4">
       <CalendarPrev
         class="btn btn-circle btn-lg"
-        @click="haptic()"
+        @click="prevMonth()"
       >
         <IconArrowLeft class="size-5" />
       </CalendarPrev>
       <CalendarNext
         class="btn btn-circle btn-lg"
-        @click="haptic()"
+        @click="nextMonth()"
       >
         <IconArrowRight class="size-5" />
       </CalendarNext>

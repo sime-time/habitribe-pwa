@@ -2,23 +2,31 @@
 import TabDock from "~/components/TabDock.vue";
 import HistoryCalendar from "~/components/HistoryCalendar.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
-import { today, getLocalTimeZone } from "@internationalized/date";
-import { ref, computed } from "vue";
+import router from "~/router";
+import { computed } from "vue";
 import { useQuery, keepPreviousData } from "@tanstack/vue-query";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
-// get the current user
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
+const route = useRoute();
 
-// this will track the current month being displayed
-const focusedDate = ref(today(getLocalTimeZone()));
+// --- Computed Month from URL Query ---
+const monthQuery = computed(() => {
+  // get the month query (YYYY-MM)
+  const month = route.query.month;
+  if (month && typeof month === "string") {
+    return month;
+  }
 
-// YYYY-MM
-const monthQuery = computed(() => focusedDate.value.toString().slice(0, 7));
+  // if no month query, create today's date in YYYY-MM format
+  return today(getLocalTimeZone()).toString().slice(0, 7);
+});
 
-// fetch monthly data
+// --- Fetch Progress Data ---
 const { data: dailyProgress, isLoading } = useQuery({
   queryKey: ["habitProgress", monthQuery],
   queryFn: async () => {
@@ -34,6 +42,12 @@ const { data: dailyProgress, isLoading } = useQuery({
   // show old data while fetching new data (prevents UI flickers)
   placeholderData: keepPreviousData,
 });
+
+// refetch data when month query changes in the url
+function handleMonthUpdate(newMonth: string) {
+  router.push({ query: { month: newMonth } });
+}
+
 </script>
 
 <template>
@@ -45,6 +59,8 @@ const { data: dailyProgress, isLoading } = useQuery({
     <HistoryCalendar
       v-else-if="dailyProgress"
       :daily-progress="dailyProgress"
+      :initial-month="monthQuery"
+      @month-update="handleMonthUpdate"
     />
   </main>
   <TabDock tab="stats" />

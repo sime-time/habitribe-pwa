@@ -9,6 +9,7 @@ import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 // --- State Management ---
 
@@ -29,7 +30,7 @@ const date = computed(() => {
   }
 
   // if no date query, create today's date in YYYY-MM-DD format
-  return new Date().toISOString().slice(0, 10);
+  return today(getLocalTimeZone()).toString().slice(0, 10);
 });
 
 // --- Data Fetching (useQuery) ---
@@ -134,13 +135,11 @@ const totalProgress = computed(() => {
   if (goalSum === 0) {
     return 0;
   }
-
   const result = Math.round(progressSum / goalSum * 100);
 
   if (result > 100) {
     return 100;
   }
-
   return result;
 });
 

@@ -17,6 +17,7 @@
     "@internationalized/date": "^3.8.2",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/vue-query": "^5.83.0",
+    "@vueuse/core": "^13.6.0",
     "better-auth": "^1.2.12",
     "chart.js": "^4.5.0",
     "pinia": "^3.0.3",
