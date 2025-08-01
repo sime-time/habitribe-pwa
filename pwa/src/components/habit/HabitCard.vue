@@ -35,7 +35,12 @@ function decrement() {
     progressPercent.value = 0;
   }
 
-  emit("updateProgress", progressValue.value, props.id)
+  emit("updateProgress", progressValue.value, props.id);
+}
+function reset() {
+  haptic();
+  progressPercent.value = 0;
+  emit("updateProgress", progressValue.value, props.id);
 }
 
 // change radial color to success color when progress >= goal
@@ -77,11 +82,12 @@ const dialog = ref<HTMLDialogElement | null>(null);
     </div>
   </div>
 
+  <!-- Slide Up Modal -->
   <dialog
     ref="dialog"
     class="modal modal-bottom sm:modal-middle"
   >
-    <div class="modal-box space-y-6 pb-14">
+    <div class="modal-box space-y-8 pb-10">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-lg">
           <icon-x />
@@ -116,6 +122,13 @@ const dialog = ref<HTMLDialogElement | null>(null);
           <icon-plus />
         </button>
       </div>
+
+      <button
+        class="btn btn-primary btn-block btn-lg"
+        @click="reset"
+      >
+        Reset
+      </button>
     </div>
   </dialog>
 </template>
