@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
-import Habits from "~/views/Habits.vue";
+import Habits from "~/views/(habit)/Habits.vue";
 import SignIn from "~/views/(auth)/SignIn.vue";
 import SignUp from "~/views/(auth)/SignUp.vue";
 import VerifyEmail from "~/views/(auth)/VerifyEmail.vue";
-import Tribe from "~/views/Tribe.vue";
-import CreateHabit from "~/views/CreateHabit.vue";
+import Tribe from "~/views/(tribe)/Tribe.vue";
+import CreateHabit from "~/views/(habit)/CreateHabit.vue";
 import History from "~/views/History.vue";
 import Profile from "~/views/Profile.vue";
 import Settings from "~/views/Settings.vue";

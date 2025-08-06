@@ -27,7 +27,7 @@ app.on(["GET", "POST"], "/api/auth/*", (c) => {
 });
 
 // habit route
-app.route("/habit", habitRoute)
+app.route("/habit", habitRoute);
 
 app.get("/", (c) => {
   return c.text("Hello Hono");

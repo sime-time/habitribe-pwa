@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import IconPlus from "~icons/tabler/plus";
+import IconArrowLeft from "~icons/tabler/arrow-left";
 import { RouterLink } from "vue-router";
 import { haptic } from "~/plugins/haptic";
 import { computed } from "vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
+import TribeDropdown from "./tribe/TribeDropdown.vue";
+import router from "~/router";
 
 const props = defineProps<{
   date?: string;
+  tribeOptions?: boolean;
+  backButton?: boolean;
 }>();
 
 const formattedDate = computed(() => {
@@ -25,7 +30,21 @@ const formattedDate = computed(() => {
   <div class="navbar">
 
     <div class="navbar-start">
-      <settings-dropdown />
+      <button
+        v-if="backButton"
+        to="/"
+        tabindex="0"
+        role="button"
+        class="btn btn-ghost btn-circle"
+        @click="() => {
+          haptic();
+          router.back();
+        }"
+      >
+        <icon-arrow-left style="font-size: 1.5em" />
+      </button>
+
+      <settings-dropdown v-else />
     </div>
 
     <div class="navbar-center">
@@ -33,18 +52,31 @@ const formattedDate = computed(() => {
         v-if="date"
         class="text-xl font-semibold"
       >{{ formattedDate }}</h1>
-      <slot v-else />
+
+      <h1
+        v-else
+        class="text-xl font-semibold"
+      >
+        <slot />
+      </h1>
     </div>
 
     <div class="navbar-end">
+      <tribe-dropdown v-if="tribeOptions" />
+
       <router-link
+        v-else-if="!backButton"
         to="/create-habit"
         class="btn bg-base-200 btn-circle text-primary"
         @click="() => haptic()"
       >
         <icon-plus style="font-size: 1.4em" />
       </router-link>
+
+      <!-- Leave empty end of navbar empty if there is a back button -->
     </div>
+
+
 
   </div>
 </template>

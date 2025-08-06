@@ -188,7 +188,7 @@ onMounted(() => {
                 <div
                   class="radial-progress border border-base-100 font-semibold text-sm"
                   :class="getProgressColor(weekDate)"
-                  :style="`--value:${getProgressForDate(weekDate)}; --size:2.4rem; --thickness:0.30rem`"
+                  :style="`--value:${getProgressForDate(weekDate)}; --size:2.6rem; --thickness:0.30rem`"
                   role="progressbar"
                 >
                   <span :class="isToday(weekDate) ? 'text-neutral' : 'text-neutral-content'">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
-import CreateHabitNavBar from "~/components/create/CreateHabitNavBar.vue";
-import CreateHabitIcons from "~/components/create/CreateHabitIcons.vue";
+import CreateHabitIcons from "~/components/habit/CreateHabitIcons.vue";
+import NavBar from "~/components/NavBar.vue";
 import { useToast } from "vue-toastification";
 import { z } from "zod/v4";
 import { useAuthStore } from "~/stores/auth-store";
@@ -102,7 +102,10 @@ async function onSubmit() {
 </script>
 
 <template>
-  <create-habit-nav-bar />
+  <nav-bar :back-button="true">
+    New Habit
+  </nav-bar>
+
   <main class="container mx-auto px-4 mt-3 mb-6">
     <form
       class="space-y-6"

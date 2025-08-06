@@ -35,7 +35,7 @@ export const auth = (env: CloudflareBindings): ReturnType<typeof betterAuth> => 
       emailOTP({
         async sendVerificationOTP({ email, otp, type }) {
           await resend.emails.send({
-            from: "tribes app <support@webundance.com>",
+            from: "Habitribe <support@webundance.com>",
             to: email,
             subject: "Verify email",
             html: `<strong>CODE: ${otp}</strong>`,
