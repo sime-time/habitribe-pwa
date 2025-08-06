@@ -2,8 +2,10 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { auth } from "./lib/auth";
 import { CloudflareBindings } from "./config/bindings";
-import habitRoute from "./routes/habit-route";
 import { createDailyHabitEntries } from "./lib/cron";
+import habitRoute from "./routes/habit-route";
+import uploadRoute from "./routes/upload-route";
+import { authMiddleware } from "./middleware/auth-middleware";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -26,14 +28,22 @@ app.on(["GET", "POST"], "/api/auth/*", (c) => {
   return auth(c.env).handler(c.req.raw);
 });
 
-// habit route
-app.route("/habit", habitRoute);
+// middleware auth guard
+app.use("/api/*", authMiddleware);
 
+// habit route
+app.route("/api/habit", habitRoute);
+
+// upload images route
+app.route("/api/upload", uploadRoute);
+
+
+// public routes
 app.get("/", (c) => {
-  return c.text("Hello Hono");
+  return c.text("Hello Habitribe");
 });
 
-app.get("/api/health", (c) => {
+app.get("/client", (c) => {
   return c.json({ success: c.env.CLIENT_ORIGIN_URL })
 });
 

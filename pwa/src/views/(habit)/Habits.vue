@@ -38,7 +38,7 @@ const date = computed(() => {
 async function fetchUserHabitEntries(dateString: string) {
   // fetch all the habit entries from this date
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/habit/entries/user/${user.value?.id}?date=${dateString}`,
+    `${import.meta.env.VITE_API_URL}/api/habit/entries/user/${user.value?.id}?date=${dateString}`,
   );
 
   if (!response.ok) {
@@ -63,7 +63,7 @@ const { mutate: mutateProgress } = useMutation({
   // update the progress of each habit entry
   mutationFn: (entry: { progress: number; habitId: number; date: string }) =>
     fetch(
-      `${import.meta.env.VITE_API_URL}/habit/entries/update/${entry.habitId}`,
+      `${import.meta.env.VITE_API_URL}/api/habit/entries/update/${entry.habitId}`,
       {
         method: "POST",
         body: JSON.stringify({

@@ -17,11 +17,17 @@
       "migrations_dir": "./src/db/migrations"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "habitribe-bucket"
+    }
+  ],
   "triggers": {
     "crons": [
       "5 0 * * *" // every day at 00:05 AM
     ]
-  }
+  },
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
@@ -32,12 +38,6 @@
   //   {
   //     "binding": "MY_KV_NAMESPACE",
   //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
   //   }
   // ],
   // "ai": {
