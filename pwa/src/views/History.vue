@@ -30,7 +30,10 @@ const monthQuery = computed(() => {
 const { data: dailyProgress, isLoading } = useQuery({
   queryKey: ["habitProgress", monthQuery],
   queryFn: async () => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/habit/progress/user/${user.value?.id}?month=${monthQuery.value}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/habit/progress/user/${user.value?.id}?month=${monthQuery.value}`, {
+      method: "GET",
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch habit progress from server");
     }

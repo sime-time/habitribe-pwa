@@ -39,6 +39,10 @@ async function fetchUserHabitEntries(dateString: string) {
   // fetch all the habit entries from this date
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/api/habit/entries/user/${user.value?.id}?date=${dateString}`,
+    {
+      method: "GET",
+      credentials: "include", // must always include credentials
+    }
   );
 
   if (!response.ok) {
@@ -66,6 +70,7 @@ const { mutate: mutateProgress } = useMutation({
       `${import.meta.env.VITE_API_URL}/api/habit/entries/update/${entry.habitId}`,
       {
         method: "POST",
+        credentials: "include",
         body: JSON.stringify({
           progress: entry.progress,
           date: entry.date,

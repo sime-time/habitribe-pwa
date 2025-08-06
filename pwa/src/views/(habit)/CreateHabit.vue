@@ -71,6 +71,7 @@ async function onSubmit() {
       `${import.meta.env.VITE_API_URL}/api/habit/create`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
