@@ -5,6 +5,25 @@ async function uploadFile(event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (!file) return;
+
+  // get the pre-signed URL from your backend
+  const response = await fetch("/api/upload/avatar-url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contentType: file.type,
+    }),
+  });
+  const { uploadUrl, key } = await response.json();
+
+  // upload the file directly to R2
+  await fetch(uploadUrl, {
+    method: "PUT",
+    body: file,
+    headers: { "Content-Type": file.type },
+  });
+
+  // update the user's profile with the new avatar URL key
 }
 </script>
 
