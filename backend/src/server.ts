@@ -5,6 +5,7 @@ import { CloudflareBindings } from "./config/bindings";
 import { createDailyHabitEntries } from "./lib/cron";
 import habitRoute from "./routes/habit-route";
 import uploadRoute from "./routes/upload-route";
+import tribeRoute from "./routes/tribe-route";
 import { authMiddleware } from "./middleware/auth-middleware";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
@@ -34,9 +35,11 @@ app.use("/api/*", authMiddleware);
 // habit route
 app.route("/api/habit", habitRoute);
 
+// tribe route
+app.route("/api/tribe", tribeRoute);
+
 // upload images route
 app.route("/api/upload", uploadRoute);
-
 
 // public routes
 app.get("/", (c) => {
@@ -47,10 +50,9 @@ app.get("/client", (c) => {
   return c.json({ success: c.env.CLIENT_ORIGIN_URL })
 });
 
-
-// cron job
 export default {
   fetch: app.fetch,
+  // cron job
   async scheduled(
     controller: ScheduledController,
     env: CloudflareBindings,

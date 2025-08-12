@@ -10,6 +10,8 @@ import CreateHabit from "~/views/(habit)/CreateHabit.vue";
 import History from "~/views/History.vue";
 import Profile from "~/views/Profile.vue";
 import Settings from "~/views/Settings.vue";
+import CreateTribe from "~/views/(tribe)/CreateTribe.vue";
+import JoinTribe from "~/views/(tribe)/JoinTribe.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,7 +60,17 @@ const router = createRouter({
       path: "/settings",
       name: "settings",
       component: Settings,
-    }
+    },
+    {
+      path: "/tribe/create",
+      name: "create-tribe",
+      component: CreateTribe,
+    },
+    {
+      path: "/tribe/join",
+      name: "join-tribe",
+      component: JoinTribe,
+    },
   ],
 });
 

@@ -62,18 +62,15 @@ const formattedDate = computed(() => {
     </div>
 
     <div class="navbar-end">
-      <tribe-dropdown v-if="tribeOptions" />
-
+      <!-- Leave end of navbar empty if there is a back button -->
       <router-link
-        v-else-if="!backButton"
+        v-if="!backButton"
         to="/create-habit"
         class="btn bg-base-200 btn-circle text-primary"
         @click="() => haptic()"
       >
         <icon-plus style="font-size: 1.4em" />
       </router-link>
-
-      <!-- Leave empty end of navbar empty if there is a back button -->
     </div>
 
 

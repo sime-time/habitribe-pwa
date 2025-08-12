@@ -49,6 +49,7 @@ async function onSubmit() {
 
     const result = await response.json();
     console.log("Tribe created succesfully", result);
+
     toast.success("New tribe created!");
 
     // back to the main tribe view
@@ -71,7 +72,7 @@ async function onSubmit() {
     New Tribe
   </nav-bar>
 
-  <main class="container mx-auto">
+  <main class="container mx-auto px-4 mt-3 mb-6">
     <form
       class="space-y-6"
       @submit.prevent="onSubmit"
@@ -91,11 +92,18 @@ async function onSubmit() {
         <label class="text-sm opacity-50">Description</label>
         <input
           v-model="tribe.description"
-          class="textarea textarea-sm textarea-ghost text-lg px-0"
-          placeholder="Description"
+          class="input input-sm input-ghost text-lg px-0"
+          placeholder="Tribe Info"
         />
       </fieldset>
 
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-xl text-lg btn-block"
+      >
+        Create Tribe
+      </button>
     </form>
   </main>
 

@@ -123,10 +123,10 @@ async function onSubmit() {
       </fieldset>
 
       <!-- Icon Select -->
-      <fieldset class="card bg-base-200 p-4 space-y-2">
+      <!-- <fieldset class="card bg-base-200 p-4 space-y-2">
         <label class="text-sm opacity-50">Icon</label>
         <create-habit-icons @habit-icon-selected="changeHabitIcon" />
-      </fieldset>
+      </fieldset> -->
 
       <!-- Goal Value/Units -->
       <fieldset class="card bg-base-200 p-4 space-y-2">

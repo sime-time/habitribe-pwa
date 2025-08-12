@@ -3,10 +3,15 @@ import { user } from "./auth-schema";
 
 export const tribe = sqliteTable("tribe", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  // if leader user is deleted, then set leaderId to null
-  leaderId: integer("leader_id").references(() => user.id, { onDelete: "set null" }),
   name: text("name").notNull(),
   description: text("description"),
+
+  // if leader user is deleted, then set leaderId to null
+  leaderId: integer("leader_id").references(() => user.id, { onDelete: "set null" }),
+
+  // unique invite code users will enter to join the tribe
+  inviteCode: text("invite_code").notNull().unique(),
+
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull()
 });
@@ -14,22 +19,9 @@ export const tribe = sqliteTable("tribe", {
 export const tribeMember = sqliteTable("tribe_member", {
   tribeId: integer("tribe_id").notNull().references(() => tribe.id, { onDelete: "cascade" }),
   userId: integer("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+
   joinedAt: integer("joined_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 }, (table) => [
   // composite key to ensure one instance of a user per tribe
   primaryKey({ columns: [table.tribeId, table.userId] }),
 ]);
-
-export const tribeInvite = sqliteTable("tribe_invite", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  tribeId: integer("tribe_id").notNull().references(() => tribe.id, { onDelete: "cascade" }),
-
-  // unique code users will enter to join the tribe
-  code: text("code").notNull().unique(),
-
-  // optional code expiration date
-  expiresAt: integer("expires_at", { mode: "timestamp" }),
-
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull()
-})

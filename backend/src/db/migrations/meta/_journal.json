@@ -50,6 +50,13 @@
       "when": 1754505143190,
       "tag": "0006_military_mockingbird",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1754845595244,
+      "tag": "0007_sudden_calypso",
+      "breakpoints": true
     }
   ]
 }
