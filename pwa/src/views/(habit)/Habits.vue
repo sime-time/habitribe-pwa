@@ -128,19 +128,16 @@ const totalProgress = computed(() => {
     return 0;
   }
 
-  let goalSum = 0;
-  let progressSum = 0;
-  for (let i = 0; i < data.value.length; i++) {
-    goalSum += data.value[i].goalValue;
-    // cap the contribution of each habit to the total progress calculation
-    // this ensures that overachieving one habit doesn't inflate the overall percentage
-    progressSum += Math.min(data.value[i].progress, data.value[i].goalValue);
+  let totalPercentage = 0;
+  for (const habit of data.value) {
+    if (habit.goalValue > 0) {
+      const habitProgress = Math.min(habit.progress, habit.goalValue);
+      totalPercentage += (habitProgress / habit.goalValue) * 100;
+    }
   }
 
-  if (goalSum === 0) {
-    return 0;
-  }
-  const result = Math.round(progressSum / goalSum * 100);
+  const averagePercentage = totalPercentage / data.value.length;
+  const result = Math.round(averagePercentage);
 
   if (result > 100) {
     return 100;

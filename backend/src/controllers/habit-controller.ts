@@ -238,54 +238,50 @@ export async function getUserProgress(c: Context) {
       return c.json({ error: "Month query parameter is required" }, 400);
     }
 
-    const db = drizzle(c.env.DB)
+    const db = drizzle(c.env.DB);
 
     const allUserHabits = await db
       .select()
       .from(habit)
       .where(eq(habit.userId, parseInt(userId)));
 
-    const userHabitIds: number[] = allUserHabits.map(h => h.id);
+    if (allUserHabits.length === 0) {
+      return c.json({}, 200); // No habits, return empty object
+    }
 
-    const dailyGoalProgress = await db
+    const userHabitIds: number[] = allUserHabits.map((h) => h.id);
+
+    const dailyProgressPercentage = await db
       .select({
         date: habitEntry.date,
-        goal: sum(habitEntry.goal),
-        // progress could be higher than goal
-        // prevent overachievement in one habit from skewing the total percentage
-        cappedProgress: sql<string>`sum(min(${habitEntry.progress}, ${habitEntry.goal}))`,
-        /* SQLITE: The multi-argument min() function returns the argument with the minimum value. The multi-argument min() function searches its arguments from left to right for an argument that defines a collating function and uses that collating function for all string comparisons. If none of the arguments to min() define a collating function, then the BINARY collating function is used. Note that min() is a simple function when it has 2 or more arguments but operates as an aggregate function if given only a single argument.
-        */
+        // NOTE: `habitEntry.goal` is of type integer, so we must cast it to a float/real
+        // for division to work correctly.
+        dailyAverage:
+          sql<number>`avg(min(${habitEntry.progress}, ${habitEntry.goal}) * 100.0 / ${habitEntry.goal})`.mapWith(
+            Number,
+          ),
       })
       .from(habitEntry)
       .where(
         and(
           inArray(habitEntry.habitId, userHabitIds),
-          like(habitEntry.date, `${month}%`)
-        ))
+          like(habitEntry.date, `${month}%`),
+        ),
+      )
       .groupBy(habitEntry.date);
 
     // use .reduce() to transform array into object
-    const totalProgressPerDay = dailyGoalProgress.reduce((accumulator, entry) => {
-      // convert strings to number
-      const totalProgress = parseFloat(entry.cappedProgress);
-      const totalGoal = parseFloat(entry.goal || "0");
-
-      // avoid division by zero
-      if (totalGoal === 0) {
-        throw new Error("Cannot divide by zero");
-      }
-      const percentage: number = Math.round((totalProgress / totalGoal) * 100);
-
-      if (entry.date !== null) {
-        accumulator[entry.date] = percentage;
-      }
-      return accumulator; // returns object: { entry.date: percentage }
-
-    }, {} as Record<string, number>)
+    const totalProgressPerDay = dailyProgressPercentage.reduce(
+      (accumulator, entry) => {
+        if (entry.date !== null) {
+          accumulator[entry.date] = Math.round(entry.dailyAverage);
+        }
+        return accumulator; // returns object: { entry.date: percentage }
+      },
+      {} as Record<string, number>,
+    );
 
     return c.json(totalProgressPerDay, 200);
-
   } catch (error) {
     console.error("getUserProgress Error:", error);
     return c.json({ error: "Something went wrong" }, 500);
