@@ -1,40 +1,78 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import NavBar from "~/components/NavBar.vue";
 import { useAuthStore } from "~/stores/auth-store";
 
 const authStore = useAuthStore();
 const isLoading = ref(false);
 
-// Constructs the full avatar URL from the key stored in the database.
-// It requires the public URL of your R2 bucket from environment variables.
+// --- Local State Management ---
+// This holds a local copy of the user's data for editing.
+// It's a best practice to avoid mutating the global store directly from form inputs.
+const formState = ref({
+  name: "",
+  username: "",
+  image: "",
+});
+
+// This will hold a temporary, local URL for the new avatar preview.
+const avatarPreviewUrl = ref<string | null>(null);
+
+// --- Lifecycle Hooks ---
+// When the component mounts, we populate our local form state from the auth store.
+onMounted(() => {
+  if (authStore.user) {
+    formState.value = {
+      name: authStore.user.name,
+      username: authStore.user.username || "",
+      image: authStore.user.image || "",
+    };
+  }
+});
+
+// --- Computed Properties ---
+// Determines the final URL for the avatar image tag.
+// It prioritizes the local preview, then the R2 URL, and finally a default placeholder.
 const avatarUrl = computed(() => {
-  if (authStore.user?.image) {
-    const r2PublicUrl = import.meta.env.VITE_R2_PUBLIC_URL;
-    // Ensure the public URL is set, otherwise, the image won't load.
-    if (!r2PublicUrl) {
-      console.error("VITE_R2_PUBLIC_URL is not set in your .env file.");
-      return "https://img.daisyui.com/images/profile/demo/batperson@192.webp";
-    }
+  if (avatarPreviewUrl.value) {
+    return avatarPreviewUrl.value; // Show the instant preview
+  }
+
+  const r2PublicUrl = import.meta.env.VITE_R2_PUBLIC_URL;
+  if (!r2PublicUrl) {
+    console.error("VITE_R2_PUBLIC_URL is not set in your .env file.");
+    return "https://img.daisyui.com/images/profile/demo/batperson@192.webp";
+  }
+  if (formState.value.image) {
+    return `${r2PublicUrl}/${formState.value.image}`;
+  }
+  if (authStore.user.image) {
     return `${r2PublicUrl}/${authStore.user.image}`;
   }
-  // Return a default placeholder image if the user has no avatar.
+
   return "https://img.daisyui.com/images/profile/demo/batperson@192.webp";
 });
 
-async function uploadFile(event: Event) {
+// --- Methods ---
+/**
+ * Handles the file input change event.
+ * This function now focuses only on the client-side logic: uploading the file
+ * and updating the local state. It no longer saves anything to the database directly.
+ */
+async function handleAvatarUpload(event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
-
-  // Guard clauses to ensure we have a file and a logged-in user.
   if (!file || !authStore.user) return;
 
+  // Create a temporary local URL to provide an instant preview of the new avatar.
+  avatarPreviewUrl.value = URL.createObjectURL(file);
   isLoading.value = true;
+
   try {
-    // Step 1: Get the pre-signed URL from your backend.
-    // We send the file's content type and the user's ID.
-    const presignResponse = await fetch("/api/upload/avatar/url", {
+    // Step 1: Get the pre-signed URL from the backend.
+    const presignResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/avatar-url`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contentType: file.type,
@@ -43,29 +81,70 @@ async function uploadFile(event: Event) {
     });
     const { uploadUrl, key } = await presignResponse.json();
 
-    // Step 2: Upload the file directly to R2 using the pre-signed URL.
+    // Step 2: Upload the file directly to R2.
     await fetch(uploadUrl, {
       method: "PUT",
       body: file,
       headers: { "Content-Type": file.type },
     });
 
-    // Step 3: Update the user's profile with the new avatar URL key.
-    // This tells our database where the new image is.
-    await fetch("/api/upload/avatar/update", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        key: key,
-        userId: authStore.user.id,
-      }),
-    });
-
-    // Step 4: Update the local state to show the new avatar immediately.
-    authStore.user.image = key;
+    // Step 3: Update our local form state with the new image key.
+    // This will be saved when the user clicks the "Save" button.
+    formState.value.image = key;
   } catch (error) {
     console.error("Failed to upload avatar:", error);
-    // Here you could show an error message to the user.
+    avatarPreviewUrl.value = null; // Clear the preview on error
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+/**
+ * Handles the form submission.
+ * It intelligently sends only the fields that have actually changed.
+ */
+async function updateProfile() {
+  if (!authStore.user) return;
+
+  isLoading.value = true;
+  const payload: Record<string, any> = {};
+
+  // --- Efficient Payload Construction ---
+  // Compare the current form state to the original user data from the store.
+  // Only add the changed fields to the payload to send to the API.
+  payload.id = authStore.user.id;
+
+  if (formState.value.name !== authStore.user.name) {
+    payload.name = formState.value.name;
+  }
+  if (formState.value.username !== authStore.user.username) {
+    payload.username = formState.value.username;
+  }
+  if (formState.value.image !== authStore.user.image) {
+    payload.image = formState.value.image;
+  }
+
+  // If nothing changed, don't make an unnecessary API call.
+  if (Object.keys(payload).length === 0) {
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    // Use the generic user update endpoint.
+    await fetch(`${import.meta.env.VITE_API_URL}/api/user/update`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    // --- Optimistic UI Update ---
+    // After a successful save, update the global auth store.
+    // This makes the UI feel instant.
+    avatarPreviewUrl.value = null; // Clear the temporary preview
+  } catch (error) {
+    console.error("Failed to update profile:", error);
   } finally {
     isLoading.value = false;
   }
@@ -75,15 +154,28 @@ async function uploadFile(event: Event) {
 <template>
   <nav-bar :back-button="true">Profile</nav-bar>
   <main class="container mx-auto px-4 mt-3 mb-6">
-    <form class="space-y-6">
+    <!-- The form now calls `updateProfile` on submit -->
+    <form
+      class="space-y-6"
+      @submit.prevent="updateProfile"
+    >
+      <!-- Name -->
+      <fieldset class="card bg-base-200 p-4 space-y-1">
+        <label class="text-sm opacity-50">Name</label>
+        <input
+          v-model="formState.name"
+          class="input input-sm input-ghost text-lg px-0"
+          placeholder="Your full name"
+        />
+      </fieldset>
+
       <!-- Username -->
       <fieldset class="card bg-base-200 p-4 space-y-1">
         <label class="text-sm opacity-50">Username</label>
         <input
-          v-if="authStore.user"
-          v-model="authStore.user.username"
+          v-model="formState.username"
           class="input input-sm input-ghost text-lg px-0"
-          placeholder="Your public name"
+          placeholder="Your public username"
         />
       </fieldset>
 
@@ -101,7 +193,7 @@ async function uploadFile(event: Event) {
             class="file-input"
             accept="image/*"
             :disabled="isLoading"
-            @change="uploadFile"
+            @change="handleAvatarUpload"
           />
           <span
             v-if="isLoading"
@@ -119,7 +211,7 @@ async function uploadFile(event: Event) {
           v-if="isLoading"
           class="loading loading-spinner"
         ></span>
-        Save
+        Save Changes
       </button>
     </form>
   </main>
