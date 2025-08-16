@@ -1,9 +1,6 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Context } from "hono";
-import { drizzle } from "drizzle-orm/d1";
-import { user } from "../db/schema/index";
-import { eq } from "drizzle-orm";
 
 /**
  * Think of this function like giving a valet a special, one-time key to park a car.
@@ -36,7 +33,7 @@ export async function getAvatarUploadUrl(c: Context) {
     // Then, we create a very specific instruction for the valet (the command).
     // It says: "You are only allowed to UPLOAD ('PutObjectCommand') a file..."
     const command = new PutObjectCommand({
-      Bucket: c.env.BUCKET.bucketName, // "...to this specific garage ('Bucket')..."
+      Bucket: c.env.R2_BUCKET_NAME,    // "...to this specific garage ('Bucket Name')..."
       Key: key,                        // "...at this exact parking spot ('Key')..."
       ContentType: contentType,        // "...and the file must be of this type ('ContentType')."
     });
@@ -54,35 +51,5 @@ export async function getAvatarUploadUrl(c: Context) {
   } catch (error) {
     console.error("Error generating pre-signed URL:", error);
     return c.json({ error: "Failed to generate upload URL" }, 500);
-  }
-}
-
-/**
- * After the frontend successfully uploads the file to R2, it calls this function.
- * This function takes the 'key' (the unique path/filename) of the uploaded image
- * and saves it to the user's record in the database.
- */
-export async function updateUserAvatar(c: Context) {
-  try {
-    // Get the image key and user's id from the request body
-    const { key, userId } = await c.req.json();
-
-    if (!key) {
-      return c.json({ error: "Image key is required" }, 400);
-    }
-
-    const db = drizzle(c.env.DB);
-
-    // Find the user in the database using their ID and update their
-    // 'image' field with the key of the newly uploaded file.
-    await db
-      .update(user)
-      .set({ image: key })
-      .where(eq(user.id, Number(userId)));
-
-    return c.json({ success: true, message: "Avatar updated successfully" }, 201);
-  } catch (error) {
-    console.error("Error updating user avatar:", error);
-    return c.json({ error: "Failed to update avatar" }, 500);
   }
 }

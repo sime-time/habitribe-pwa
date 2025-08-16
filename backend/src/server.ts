@@ -3,10 +3,11 @@ import { cors } from "hono/cors";
 import { auth } from "./lib/auth";
 import { CloudflareBindings } from "./config/bindings";
 import { createDailyHabitEntries } from "./lib/cron";
+import { authMiddleware } from "./middleware/auth-middleware";
 import habitRoute from "./routes/habit-route";
 import uploadRoute from "./routes/upload-route";
 import tribeRoute from "./routes/tribe-route";
-import { authMiddleware } from "./middleware/auth-middleware";
+import userRoute from "./routes/user-route";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -16,7 +17,7 @@ app.use('*', async (c, next) => {
   const corsMiddleware = cors({
     origin: originUrl,
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["GET", "POST", "OPTIONS"],
+    allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
     credentials: true,
@@ -40,6 +41,9 @@ app.route("/api/tribe", tribeRoute);
 
 // upload images route
 app.route("/api/upload", uploadRoute);
+
+// user route
+app.route("/api/user", userRoute);
 
 // public routes
 app.get("/", (c) => {

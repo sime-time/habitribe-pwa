@@ -6,6 +6,7 @@ export interface CloudflareBindings {
   CLIENT_ORIGIN_URL: string;
   SERVER_BASE_URL: string;
   CLOUDFLARE_ACCOUNT_ID: string;
+  R2_BUCKET_NAME: string;
   R2_ACCESS_KEY_ID: string;
   R2_SECRET_ACCESS_KEY: string;
 }
