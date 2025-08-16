@@ -57,6 +57,13 @@
       "when": 1754845595244,
       "tag": "0007_sudden_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1755304139244,
+      "tag": "0008_dazzling_squadron_sinister",
+      "breakpoints": true
     }
   ]
 }

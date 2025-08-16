@@ -1,21 +1,34 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { createAuthClient } from "better-auth/vue";
-import { emailOTPClient } from "better-auth/client/plugins";
+import { emailOTPClient, inferAdditionalFields } from "better-auth/client/plugins";
 import { useToast } from "vue-toastification";
 import type { User } from "better-auth";
 import router from "~/router";
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_API_URL,
-  plugins: [emailOTPClient()],
+  plugins: [
+    emailOTPClient(),
+    inferAdditionalFields({
+      user: {
+        username: {
+          type: "string",
+          required: false,
+          defaultValue: "",
+          input: true,
+        }
+      }
+    }),
+  ],
+
 });
 
 export const useAuthStore = defineStore("useAuthStore", () => {
   const toast = useToast();
 
   const authenticated = ref(false);
-  const user = ref<User | null>(null);
+  const user = ref<any | null>(null);
   const loading = ref(false);
 
   function setAuth(isAuthenticated: boolean, userData: User | null) {

@@ -43,6 +43,16 @@ export const auth = (env: CloudflareBindings): ReturnType<typeof betterAuth> => 
         },
       }),
     ],
+    user: {
+      additionalFields: {
+        username: {
+          type: "string",
+          required: false,
+          defaultValue: "",
+          input: true,
+        },
+      }
+    },
     advanced: {
       crossSubDomainCookies: {
         enabled: true,
