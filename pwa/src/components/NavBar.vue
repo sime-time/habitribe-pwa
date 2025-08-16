@@ -5,12 +5,10 @@ import { RouterLink } from "vue-router";
 import { haptic } from "~/plugins/haptic";
 import { computed } from "vue";
 import SettingsDropdown from "./SettingsDropdown.vue";
-import TribeDropdown from "./tribe/TribeDropdown.vue";
 import router from "~/router";
 
 const props = defineProps<{
   date?: string;
-  tribeOptions?: boolean;
   backButton?: boolean;
 }>();
 
@@ -65,7 +63,7 @@ const formattedDate = computed(() => {
       <!-- Leave end of navbar empty if there is a back button -->
       <router-link
         v-if="!backButton"
-        to="/create-habit"
+        to="/habit/create"
         class="btn bg-base-200 btn-circle text-primary"
         @click="() => haptic()"
       >

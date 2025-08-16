@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { tribe, tribeMember, user } from "../db/schema";
+import { tribe, tribeMember, user, habit, habitEntry } from "../db/schema/index";
 import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 import { ZodError } from "zod";
@@ -124,4 +124,55 @@ export async function joinTribe(c: Context) {
     console.error("Error joining tribe", error);
     return c.json({ error: "Invalid Invite Code" }, 500);
   }
+}
+
+export async function getTribeMemberData(c: Context) {
+  const { tribeId } = c.req.param();
+  const pastDays = c.req.query("pastDays");
+  try {
+    const db = drizzle(c.env.DB);
+
+    // get all the members of this tribe
+    const tribeMembers = await db
+      .select()
+      .from(tribeMember)
+      .where(eq(tribeMember.tribeId, Number(tribeId)));
+
+    if (pastDays) {
+
+
+    } else {
+      // if pastDays is null, then get all-time percentage complete
+
+    }
+
+    // get the percentage complete of each member
+    // with respect to the amount of past days selected
+    const memberData = tribeMembers.map(async (member) => {
+      const userData = await db
+        .select({
+          email: user.email,
+          username: user.username,
+          image: user.image
+        })
+        .from(user)
+        .where(eq(user.id, member.userId));
+
+      const userHabitIds = await db
+        .select({ id: habit.id })
+        .from(habit)
+        .where(eq(habit.userId, member.userId));
+
+      if (userHabitIds.length === 0) {
+        return userData; // No habits, return no percentage data
+      }
+
+    })
+
+
+
+  } catch (error) {
+
+  }
+
 }
