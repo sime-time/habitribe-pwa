@@ -34,7 +34,6 @@ const date = computed(() => {
 });
 
 // --- Data Fetching (useQuery) ---
-
 async function fetchUserHabitEntries(dateString: string) {
   // fetch all the habit entries from this date
   const response = await fetch(

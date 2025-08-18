@@ -129,6 +129,12 @@ const dialog = ref<HTMLDialogElement | null>(null);
       >
         Reset
       </button>
+      <router-link
+        :to="`/habit/edit?id=${id}`"
+        class="btn btn-block btn-lg"
+      >
+        Edit Habit
+      </router-link>
     </div>
   </dialog>
 </template>

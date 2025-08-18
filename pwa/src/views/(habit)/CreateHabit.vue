@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
-import CreateHabitIcons from "~/components/habit/CreateHabitIcons.vue";
+import { ref, reactive, computed, watch } from "vue";
 import NavBar from "~/components/NavBar.vue";
 import { useToast } from "vue-toastification";
 import { z } from "zod/v4";
@@ -117,7 +116,7 @@ async function onSubmit() {
         <label class="text-sm opacity-50">Habit Name</label>
         <input
           v-model="habit.name"
-          class="input input-sm input-ghost text-lg px-0"
+          class="input input-sm input-primary input-ghost text-lg px-0 w-full"
           placeholder="e.g. Meditate"
         />
       </fieldset>
@@ -128,41 +127,96 @@ async function onSubmit() {
         <create-habit-icons @habit-icon-selected="changeHabitIcon" />
       </fieldset> -->
 
-      <!-- Goal Value/Units -->
-      <fieldset class="card bg-base-200 p-4 space-y-2">
-        <label class="text-sm opacity-50">Goal</label>
-        <div class="grid grid-cols-2 items-center justify-between">
+      <section class="grid grid-cols-3 gap-5">
 
-          <input
-            type="number"
-            v-model="habit.goalValue"
-            placeholder="0"
-            class="input border-none text-lg"
-          />
+        <!-- Goal Value -->
+        <fieldset class="card bg-base-200 p-4 space-y-2">
+          <label class="text-sm opacity-50">Goal Value</label>
+          <div class="grid grid-cols-1 items-center justify-between">
 
-          <div class="tabs tabs-sm tabs-box justify-around">
             <input
-              type="radio"
-              name="goal-unit"
-              class="tab [--tab-bg:var(--color-primary)]"
-              aria-label="Minutes"
-              value="minutes"
-              v-model="habit.goalUnit"
+              type="number"
+              v-model="habit.goalValue"
+              placeholder="0"
+              class="input border-none input-primary text-lg"
             />
-            <input
-              type="radio"
-              name="goal-unit"
-              class="tab [--tab-bg:var(--color-primary)]"
-              aria-label="Count"
-              value="count"
-              v-model="habit.goalUnit"
-            />
+
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
+        <!-- Goal Units -->
+        <fieldset class="card bg-base-200 p-4 space-y-2  col-span-2">
+          <label class="text-sm opacity-50">Goal Unit</label>
+          <div class="grid grid-cols-2 gap-y-3">
+            <label class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="goal-unit"
+                class="radio radio-primary"
+                aria-label="Hours"
+                value="hours"
+                v-model="habit.goalUnit"
+              />
+              hours
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="goal-unit"
+                class="radio radio-primary"
+                aria-label="Minutes"
+                value="minutes"
+                v-model="habit.goalUnit"
+              />
+              minutes
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="goal-unit"
+                class="radio radio-primary"
+                aria-label="Pages"
+                value="pages"
+                v-model="habit.goalUnit"
+              />
+              pages
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="goal-unit"
+                class="radio radio-primary"
+                aria-label="Count"
+                value="count"
+                v-model="habit.goalUnit"
+              />
+              count
+            </label>
+
+            <label class="flex items-center gap-1 col-span-2">
+              <input
+                type="radio"
+                name="goal-unit"
+                class="radio radio-primary"
+                aria-label="Custom"
+                value="custom"
+              />
+              <input
+                type="text"
+                v-model="habit.goalUnit"
+                placeholder="other"
+                class="input input-primary border-none input-xs text-base"
+              />
+            </label>
+          </div>
+        </fieldset>
+
+      </section>
       <!-- Set Reminder -->
-      <fieldset class="card bg-base-200 p-4 space-y-2">
+      <!-- <fieldset class="card bg-base-200 p-4 space-y-2">
         <div class="flex justify-between items-center">
           <label class="text-lg">Reminders</label>
           <input
@@ -183,12 +237,12 @@ async function onSubmit() {
             v-model="habit.reminderTime"
           />
         </div>
-      </fieldset>
+      </fieldset> -->
 
       <!-- Set Schedule -->
       <fieldset class="card bg-base-200 p-4 space-y-2">
         <div class="flex justify-between items-center">
-          <label class="text-lg">Schedule</label>
+          <label class="opacity-50">Schedule</label>
           <p class="opacity-50">{{ isEveryday ? "Everyday" : "Weekly" }}</p>
         </div>
         <div class="grid grid-cols-7 gap-2 mt-1">

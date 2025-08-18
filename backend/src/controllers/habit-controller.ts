@@ -2,8 +2,59 @@ import { Context } from "hono";
 import { habit, habitEntry } from "../db/schema";
 import { and, eq, inArray, sql, like, sum } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { HabitSchema, HabitEntrySchema } from "@habitribe/shared-types";
+import { HabitSchema, HabitEntrySchema, HabitUpdateSchema } from "@habitribe/shared-types";
 import { ZodError } from "zod";
+
+export async function getHabit(c: Context) {
+  const { id } = c.req.param();
+  try {
+    const db = drizzle(c.env.DB);
+    const result = await db
+      .select()
+      .from(habit)
+      .where(eq(habit.id, parseInt(id)))
+      .limit(1);
+
+    return c.json(result[0], 200);
+  } catch (error) {
+    console.error("Error getting habit", error);
+    return c.json({ error: "Something went wrong" }, 500);
+  }
+}
+
+export async function updateHabit(c: Context) {
+  try {
+    const { id } = c.req.param();
+    const body = await c.req.json();
+
+    const habitUpdate = HabitUpdateSchema.parse(body);
+
+    const db = drizzle(c.env.DB);
+
+    await db
+      .update(habit)
+      .set(habitUpdate)
+      .where(eq(habit.id, parseInt(id)));
+
+    // also update today's habit entry
+    if (habitUpdate.goalValue) {
+      await db
+        .update(habitEntry)
+        .set({
+          goal: habitUpdate.goalValue,
+        })
+        .where(and(
+          eq(habitEntry.habitId, parseInt(id)),
+          eq(habitEntry.date, sql`CURRENT_DATE`)
+        ));
+    }
+
+    return c.json({ message: "Habit updated" }, 200);
+  } catch (error) {
+    console.error("Error updating habit", error);
+    return c.json({ error: "Something went wrong" }, 500);
+  }
+}
 
 export async function createHabit(c: Context) {
   const body = await c.req.json();
@@ -60,6 +111,14 @@ export async function deleteHabit(c: Context) {
         404,
       );
     }
+
+    // also delete today's habit entry
+    await db
+      .delete(habitEntry)
+      .where(and(
+        eq(habitEntry.habitId, parseInt(id)),
+        eq(habitEntry.date, sql`CURRENT_DATE`)
+      ));
 
     return c.json({ deleted: deletedHabit[0] }, 200);
   } catch (error) {
@@ -254,8 +313,6 @@ export async function getUserProgress(c: Context) {
     const dailyProgressPercentage = await db
       .select({
         date: habitEntry.date,
-        // NOTE: `habitEntry.goal` is of type integer, so we must cast it to a float/real
-        // for division to work correctly.
         dailyAverage:
           sql<number>`avg(min(${habitEntry.progress}, ${habitEntry.goal}) * 100.0 / ${habitEntry.goal})`.mapWith(
             Number,

@@ -1,5 +1,7 @@
 import { Hono } from "hono";
 import {
+  getHabit,
+  updateHabit,
   createHabit,
   deleteHabit,
   getUserHabits,
@@ -10,8 +12,9 @@ import {
 
 const router = new Hono();
 
+router.get("/:id", getHabit);
 router.post("/create", createHabit);
-// router.post("/update/:id", updateHabit);
+router.post("/update/:id", updateHabit);
 router.delete("/delete/:id", deleteHabit);
 router.get("/user/:userId", getUserHabits);
 router.get("/entries/user/:userId", getUserHabitEntries);

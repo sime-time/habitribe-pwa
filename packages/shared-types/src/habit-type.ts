@@ -5,10 +5,7 @@ export const HabitSchema = z.object({
   userId: z.coerce.number(),
   icon: z.string().optional(),
   goalValue: z.coerce.number().min(1),
-  goalUnit: z.enum(
-    ["minutes", "count"],
-    "Goal unit must be in minutes or count",
-  ),
+  goalUnit: z.string().min(1, "Goal unit required").max(40),
   schedule: z.object({
     days: z.array(z.number()),
   }),
@@ -25,3 +22,16 @@ export const HabitEntrySchema = z.object({
   progress: z.coerce.number().optional(),
 });
 export type HabitEntrySchemaType = z.infer<typeof HabitEntrySchema>;
+
+export const HabitUpdateSchema = z.object({
+  name: z.string().min(1, "Habit name required").optional(),
+  icon: z.string().optional(),
+  goalValue: z.coerce.number().min(1).optional(),
+  goalUnit: z.string().min(1, "Goal unit required").max(40).optional(),
+  schedule: z.object({
+    days: z.array(z.number()),
+  }).optional(),
+  reminderEnabled: z.boolean().default(false).optional(),
+  reminderTime: z.string().optional(),
+});
+export type HabitUpdateSchemaType = z.infer<typeof HabitUpdateSchema>;
