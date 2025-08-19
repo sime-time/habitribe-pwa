@@ -97,8 +97,8 @@ export async function createHabit(c: Context) {
 }
 
 export async function deleteHabit(c: Context) {
-  const { id } = c.req.param();
   try {
+    const { id } = c.req.param();
     const db = drizzle(c.env.DB);
     const deletedHabit = await db
       .delete(habit)

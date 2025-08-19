@@ -73,7 +73,7 @@ export async function getTribe(c: Context) {
         description: tribe.description,
         inviteCode: tribe.inviteCode,
         leaderId: tribe.leaderId,
-        leaderName: user.name,
+        leaderName: user.username,
         leaderImage: user.image,
       })
       .from(tribe)
@@ -134,45 +134,32 @@ export async function getTribeMemberData(c: Context) {
 
     // get all the members of this tribe
     const tribeMembers = await db
-      .select()
+      .select({ userId: tribeMember.userId })
       .from(tribeMember)
       .where(eq(tribeMember.tribeId, Number(tribeId)));
 
-    if (pastDays) {
-
-
-    } else {
-      // if pastDays is null, then get all-time percentage complete
-
-    }
-
-    // get the percentage complete of each member
-    // with respect to the amount of past days selected
-    const memberData = tribeMembers.map(async (member) => {
-      const userData = await db
+    // get the user data for each member
+    const tribeUsersPromises = tribeMembers.map(async (member) => {
+      const data = await db
         .select({
-          email: user.email,
+          id: user.id,
+          name: user.name,
           username: user.username,
-          image: user.image
+          image: user.image,
         })
         .from(user)
-        .where(eq(user.id, member.userId));
+        .where(eq(user.id, member.userId))
 
-      const userHabitIds = await db
-        .select({ id: habit.id })
-        .from(habit)
-        .where(eq(habit.userId, member.userId));
+      return data[0];
+    });
 
-      if (userHabitIds.length === 0) {
-        return userData; // No habits, return no percentage data
-      }
+    const tribeUsers = await Promise.all(tribeUsersPromises);
 
-    })
-
-
+    return c.json(tribeUsers, 200);
 
   } catch (error) {
-
+    console.error("Error getting tribe members", error);
+    return c.json({ error: "Something went wrong" }, 500);
   }
 
 }

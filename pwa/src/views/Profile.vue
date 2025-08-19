@@ -2,9 +2,12 @@
 import { computed, onMounted, ref, watch } from "vue";
 import NavBar from "~/components/NavBar.vue";
 import { useAuthStore } from "~/stores/auth-store";
+import { useToast } from "vue-toastification";
+import router from "~/router";
 
 const authStore = useAuthStore();
 const isLoading = ref(false);
+const toast = useToast();
 
 // --- Local State Management ---
 // This holds a local copy of the user's data for editing.
@@ -143,8 +146,15 @@ async function updateProfile() {
     // After a successful save, update the global auth store.
     // This makes the UI feel instant.
     avatarPreviewUrl.value = null; // Clear the temporary preview
+
+    toast.success("Profile updated");
+
+    // go back to previous page
+    router.back();
+
   } catch (error) {
     console.error("Failed to update profile:", error);
+    toast.error("Failed to update profile");
   } finally {
     isLoading.value = false;
   }

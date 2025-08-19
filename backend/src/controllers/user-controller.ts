@@ -11,8 +11,7 @@ import { UpdateUserSchema } from "@habitribe/shared-types";
  */
 export async function updateUser(c: Context) {
   try {
-    // Get the authenticated user's ID from the JWT payload.
-    // This is more secure than trusting an ID from the request body.
+    // Get the authenticated user data
     const userBody = await c.req.json();
 
     // 1. Validate the incoming data against the Zod schema.

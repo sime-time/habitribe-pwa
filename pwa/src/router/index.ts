@@ -83,7 +83,7 @@ const router = createRouter({
 // navigation guard for authentication
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  const { authenticated } = storeToRefs(authStore);
+  const { authenticated, user } = storeToRefs(authStore);
 
   // routes that do NOT require authentication
   const publicRoutes = ["/sign-in", "/sign-up", "/verify-email"];
@@ -99,6 +99,15 @@ router.beforeEach((to, from, next) => {
     authenticated.value
   ) {
     return next("/");
+  }
+
+  // if the route is a tribe join/creation page,
+  // make sure the user has a profile pic and username
+  if (
+    (to.path === "/tribe/create" || to.path === "/tribe/join") &&
+    (!user.value.image || !user.value.username)
+  ) {
+    return next("/profile")
   }
 
   // otherwise, continue to route as normal

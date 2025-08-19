@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import type { DateValue } from "@internationalized/date";
 import { haptic } from "~/plugins/haptic";
-import router from "~/router";
 import { CalendarDate, getLocalTimeZone, toCalendarDate, today } from "@internationalized/date";
 import { RouterLink } from "vue-router";
-import { ref, onMounted, useTemplateRef, computed } from "vue";
-import { useSwipe } from "@vueuse/core";
+import { ref, useTemplateRef, computed } from "vue";
 import IconArrowLeft from "~icons/tabler/arrow-left";
 import IconArrowRight from "~icons/tabler/arrow-right";
 import NavBar from "~/components/NavBar.vue";
@@ -103,24 +101,6 @@ function prevMonth() {
   handleMonthUpdate();
 }
 
-// use swipe gestures to go to next and prev months
-onMounted(() => {
-  if (calendarRef.value) {
-    useSwipe(calendarRef.value.$el, {
-      onSwipeEnd(_e, direction) {
-        if (direction === 'none') {
-          return
-        }
-        else if (["down", "right"].includes(direction)) {
-          prevMonth();
-        }
-        else {
-          nextMonth();
-        }
-      }
-    })
-  }
-});
 </script>
 
 <template>
