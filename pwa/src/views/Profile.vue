@@ -44,7 +44,7 @@ const avatarUrl = computed(() => {
   const r2PublicUrl = import.meta.env.VITE_R2_PUBLIC_URL;
   if (!r2PublicUrl) {
     console.error("VITE_R2_PUBLIC_URL is not set in your .env file.");
-    return "https://img.daisyui.com/images/profile/demo/batperson@192.webp";
+    return "/blank-avatar.png";
   }
   if (formState.value.image) {
     return `${r2PublicUrl}/${formState.value.image}`;
@@ -53,7 +53,7 @@ const avatarUrl = computed(() => {
     return `${r2PublicUrl}/${authStore.user.image}`;
   }
 
-  return "https://img.daisyui.com/images/profile/demo/batperson@192.webp";
+  return "/blank-avatar.png";
 });
 
 // --- Methods ---
@@ -169,6 +169,7 @@ async function updateProfile() {
       class="space-y-6"
       @submit.prevent="updateProfile"
     >
+      <p class="text-center text-lg">You need to upload an avatar and username before joining a tribe.</p>
       <!-- Name -->
       <fieldset class="card bg-base-200 p-4 space-y-1">
         <label class="text-sm opacity-50">Name</label>
