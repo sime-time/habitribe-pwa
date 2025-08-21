@@ -56,6 +56,20 @@ watch(progressValue, (newProgress: number) => {
 // -- Modal: Edit Habit Entry --
 const dialog = ref<HTMLDialogElement | null>(null);
 
+// -- Upload Proof --
+const proofInput = ref<HTMLInputElement | null>(null);
+
+const triggerProofInput = () => {
+  proofInput.value?.click();
+}
+
+const handleProofSelected = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    const selectedFile = target.files[0];
+    console.log("File selected:", selectedFile.name);
+  }
+}
 </script>
 
 <template>
@@ -87,7 +101,7 @@ const dialog = ref<HTMLDialogElement | null>(null);
     ref="dialog"
     class="modal modal-bottom sm:modal-middle"
   >
-    <div class="modal-box space-y-8 pb-10">
+    <div class="modal-box space-y-6 pb-10">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-lg">
           <icon-x />
@@ -123,11 +137,19 @@ const dialog = ref<HTMLDialogElement | null>(null);
         </button>
       </div>
 
+
+
       <button
         class="btn btn-primary btn-block btn-lg"
         @click="reset"
       >
         Reset
+      </button>
+      <button
+        class="btn btn-secondary btn-block btn-lg"
+        @click="triggerProofInput"
+      >
+        Send Proof
       </button>
       <router-link
         :to="`/habit/edit?id=${id}`"
@@ -137,4 +159,11 @@ const dialog = ref<HTMLDialogElement | null>(null);
       </router-link>
     </div>
   </dialog>
+  <input
+    type="file"
+    ref="proofInput"
+    @change="handleProofSelected"
+    class="hidden"
+    accept="image/*"
+  />
 </template>

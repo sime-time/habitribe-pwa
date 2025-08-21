@@ -107,7 +107,7 @@ router.beforeEach((to, from, next) => {
     (to.path === "/tribe/create" || to.path === "/tribe/join") &&
     (!user.value.image || !user.value.username)
   ) {
-    return next("/profile")
+    return next("/profile");
   }
 
   // otherwise, continue to route as normal

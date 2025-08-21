@@ -61,7 +61,6 @@ const { data, isLoading, isError, error, refetch } = useQuery({
 });
 
 // --- Data Mutation (useMutation) ---
-
 const { mutate: mutateProgress } = useMutation({
   // update the progress of each habit entry
   mutationFn: (entry: { progress: number; habitId: number; date: string }) =>
