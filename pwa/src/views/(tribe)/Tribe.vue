@@ -82,7 +82,14 @@ const { data: tribeMembers, isLoading: areMembersLoading } = useQuery({
   enabled: computed(() => !!tribe.value?.id),
 });
 
-
+// sort tribe members by habit completion rate
+const sortedTribeMembers = computed(() => {
+  if (!tribeMembers.value) {
+    return [];
+  }
+  // sort by progress descending
+  return [...tribeMembers.value].sort((a: any, b: any) => b.progress - a.progress);
+});
 
 // --- Copy Invite Code ---
 const toast = useToast();
@@ -151,18 +158,19 @@ function copyInviteCode() {
 
       <!-- LEADERBOARD -->
       <section class="card bg-base-200 flex flex-col justify-between items-center p-5">
-        <div class="flex w-full justify-between">
+        <div class="flex w-full justify-between items-center">
           <div class="flex items-center gap-2 text-xl">
             <IconTrophy />
             <h2 class="font-bold">Leaderboard</h2>
           </div>
 
-          <select class="select select-ghost select-sm text-primary flex w-fit text-end">
+          <!-- <select class="select select-ghost select-sm text-primary flex w-fit text-end">
             <option selected>Today</option>
             <option>Past 7 days</option>
             <option>Past 30 days</option>
             <option>All time</option>
-          </select>
+          </select> -->
+          <p class="text-primary text-sm">Consistency</p>
         </div>
 
         <!-- List of Members -->
@@ -172,7 +180,7 @@ function copyInviteCode() {
         >
           <ul class="space-y-5">
             <li
-              v-for="member in tribeMembers"
+              v-for="member in sortedTribeMembers"
               :key="member.id"
               class="flex items-center justify-between"
             >
@@ -188,7 +196,7 @@ function copyInviteCode() {
               </div>
 
               <div>
-                <span>50%</span>
+                <span>{{ member.progress }}%</span>
               </div>
             </li>
           </ul>

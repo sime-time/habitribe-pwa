@@ -1,7 +1,7 @@
 import { Context } from "hono";
 import { tribe, tribeMember, user, habit, habitEntry } from "../db/schema/index";
 import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { ZodError } from "zod";
 import { TribeInviteSchema, TribeSchema } from "@habitribe/shared-types";
 import { generateInviteCode } from "../lib/generate-invite";
@@ -128,7 +128,7 @@ export async function joinTribe(c: Context) {
 
 export async function getTribeMemberData(c: Context) {
   const { tribeId } = c.req.param();
-  const pastDays = c.req.query("pastDays");
+  // const pastDays = c.req.query("pastDays");
   try {
     const db = drizzle(c.env.DB);
 
@@ -140,7 +140,7 @@ export async function getTribeMemberData(c: Context) {
 
     // get the user data for each member
     const tribeUsersPromises = tribeMembers.map(async (member) => {
-      const data = await db
+      const userData = await db
         .select({
           id: user.id,
           name: user.name,
@@ -150,10 +150,42 @@ export async function getTribeMemberData(c: Context) {
         .from(user)
         .where(eq(user.id, member.userId))
 
-      return data[0];
+      // grab all of the user's habits into an array
+      const userHabits = await db
+        .select()
+        .from(habit)
+        .where(eq(habit.userId, userData[0].id));
+
+      if (userHabits.length === 0) {
+        // if no habits return user data with 0% progress
+        return { ...userData[0], progress: 0 };
+      }
+
+      const userHabitIds: number[] = userHabits.map((h) => h.id);
+
+      // this will return a single value of all time habit progress consistency
+      const progressPercentage = await db
+        .select({
+          value:
+            sql<number>`avg(min(${habitEntry.progress}, ${habitEntry.goal}) * 100.0 / ${habitEntry.goal})`.mapWith(
+              Number,
+            ),
+        })
+        .from(habitEntry)
+        .where(
+          and(
+            inArray(habitEntry.habitId, userHabitIds)
+          )
+        )
+
+      const userProgress = Math.round(progressPercentage[0].value);
+      const userWithProgress = { ...userData[0], progress: userProgress }
+      return userWithProgress;
     });
 
     const tribeUsers = await Promise.all(tribeUsersPromises);
+
+
 
     return c.json(tribeUsers, 200);
 
