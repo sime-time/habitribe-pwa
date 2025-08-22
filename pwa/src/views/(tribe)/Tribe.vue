@@ -183,8 +183,8 @@ function copyInviteCode() {
                     <img :src="member.image" />
                   </div>
                 </div>
-                <!-- Username -->
-                <p>{{ member.username }}</p>
+                <!-- Display name -->
+                <p>{{ member.displayName }}</p>
               </div>
 
               <div>

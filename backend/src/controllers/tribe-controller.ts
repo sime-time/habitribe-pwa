@@ -73,7 +73,7 @@ export async function getTribe(c: Context) {
         description: tribe.description,
         inviteCode: tribe.inviteCode,
         leaderId: tribe.leaderId,
-        leaderName: user.username,
+        leaderName: user.displayName,
         leaderImage: user.image,
       })
       .from(tribe)
@@ -144,7 +144,7 @@ export async function getTribeMemberData(c: Context) {
         .select({
           id: user.id,
           name: user.name,
-          username: user.username,
+          displayName: user.displayName,
           image: user.image,
         })
         .from(user)

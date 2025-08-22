@@ -45,7 +45,7 @@ export const auth = (env: CloudflareBindings): ReturnType<typeof betterAuth> => 
     ],
     user: {
       additionalFields: {
-        username: {
+        displayName: {
           type: "string",
           required: false,
           defaultValue: "",

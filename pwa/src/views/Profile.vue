@@ -14,7 +14,7 @@ const toast = useToast();
 // It's a best practice to avoid mutating the global store directly from form inputs.
 const formState = ref({
   name: "",
-  username: "",
+  displayName: "",
   image: "",
 });
 
@@ -27,7 +27,7 @@ onMounted(() => {
   if (authStore.user) {
     formState.value = {
       name: authStore.user.name,
-      username: authStore.user.username || "",
+      displayName: authStore.user.displayName || "",
       image: authStore.user.image || "",
     };
   }
@@ -120,8 +120,8 @@ async function updateProfile() {
   if (formState.value.name !== authStore.user.name) {
     payload.name = formState.value.name;
   }
-  if (formState.value.username !== authStore.user.username) {
-    payload.username = formState.value.username;
+  if (formState.value.displayName !== authStore.user.displayName) {
+    payload.displayName = formState.value.displayName;
   }
   if (formState.value.image !== authStore.user.image) {
     payload.image = formState.value.image;
@@ -169,7 +169,7 @@ async function updateProfile() {
       class="space-y-6"
       @submit.prevent="updateProfile"
     >
-      <p class="text-center text-lg">You need to upload an avatar and username before joining a tribe.</p>
+      <p class="text-center text-lg">You need to upload an avatar and display name before joining a tribe.</p>
       <!-- Name -->
       <fieldset class="card bg-base-200 p-4 space-y-1">
         <label class="text-sm opacity-50">Name</label>
@@ -180,13 +180,13 @@ async function updateProfile() {
         />
       </fieldset>
 
-      <!-- Username -->
+      <!-- Display Name-->
       <fieldset class="card bg-base-200 p-4 space-y-1">
-        <label class="text-sm opacity-50">Username</label>
+        <label class="text-sm opacity-50">Display Name</label>
         <input
-          v-model="formState.username"
+          v-model="formState.displayName"
           class="input input-sm input-ghost text-lg px-0"
-          placeholder="Your public username"
+          placeholder="Your public display name"
         />
       </fieldset>
 

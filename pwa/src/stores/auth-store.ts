@@ -12,7 +12,7 @@ export const authClient = createAuthClient({
     emailOTPClient(),
     inferAdditionalFields({
       user: {
-        username: {
+        displayName: {
           type: "string",
           required: false,
           defaultValue: "",
