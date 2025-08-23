@@ -96,7 +96,7 @@ router.beforeEach((to, from, next) => {
 
   // if the user is not authenticated
   if (!authenticated.value && !publicRoutes.includes(to.path)) {
-    return next("/sign-in");
+    return next("/sign-up");
   }
 
   // if the route is an auth page AND user is authenticated

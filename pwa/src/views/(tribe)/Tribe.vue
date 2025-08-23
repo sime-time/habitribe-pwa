@@ -6,12 +6,13 @@ import IconBonfire from "~icons/solar/bonfire-broken";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useMutation } from "@tanstack/vue-query";
 import { useToast } from "vue-toastification";
 import IconUserPlus from "~icons/solar/user-plus-broken";
 import IconGroup from "~icons/solar/users-group-two-rounded-broken"
 import IconCopy from "~icons/tabler/copy";
 import { RouterLink } from "vue-router";
+import router from "~/router";
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
@@ -99,6 +100,29 @@ function copyInviteCode() {
     toast.success("Copied Invite Code");
   }
 }
+
+// --- Leave Tribe (useMutation) ---
+const { mutate: leaveTribe } = useMutation({
+  mutationFn: () =>
+    fetch(
+      `${import.meta.env.VITE_API_URL}/api/tribe/members/delete`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        body: JSON.stringify({
+          userId: user.value.id,
+          tribeId: tribe.value.id,
+        }),
+      },
+    ),
+  onSuccess: () => {
+    toast.info(`You left ${tribe.value.name}`);
+    router.go(0);
+  },
+  onError: () => {
+    toast.error("Internal Server Error");
+  },
+});
 </script>
 
 <template>
@@ -164,12 +188,6 @@ function copyInviteCode() {
             <h2 class="font-bold">Leaderboard</h2>
           </div>
 
-          <!-- <select class="select select-ghost select-sm text-primary flex w-fit text-end">
-            <option selected>Today</option>
-            <option>Past 7 days</option>
-            <option>Past 30 days</option>
-            <option>All time</option>
-          </select> -->
           <p class="text-primary text-sm">Consistency</p>
         </div>
 
@@ -208,6 +226,15 @@ function copyInviteCode() {
         </div>
 
       </section>
+
+      <div class="flex justify-center w-full">
+        <button
+          @click="() => leaveTribe()"
+          class="btn btn-sm text-primary btn-ghost"
+        >
+          Leave Tribe
+        </button>
+      </div>
     </div>
   </main>
   <TabDock tab="tribe" />

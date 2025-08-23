@@ -3,12 +3,12 @@ import { tribe, tribeMember, user, habit, habitEntry } from "../db/schema/index"
 import { drizzle } from "drizzle-orm/d1";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { ZodError } from "zod";
-import { TribeInviteSchema, TribeSchema } from "@habitribe/shared-types";
+import { TribeInviteSchema, TribeSchema, TribeLeaveSchema } from "@habitribe/shared-types";
 import { generateInviteCode } from "../lib/generate-invite";
 
 export async function createTribe(c: Context) {
-  const body = await c.req.json();
   try {
+    const body = await c.req.json();
     const { name, leaderId, description } = TribeSchema.parse(body);
 
     const db = drizzle(c.env.DB);
@@ -49,8 +49,8 @@ export async function createTribe(c: Context) {
 }
 
 export async function getTribe(c: Context) {
-  const { userId } = c.req.param();
   try {
+    const { userId } = c.req.param();
     const db = drizzle(c.env.DB);
 
     // Get the tribeId from the tribeMember table
@@ -194,4 +194,49 @@ export async function getTribeMemberData(c: Context) {
     return c.json({ error: "Something went wrong" }, 500);
   }
 
+}
+
+export async function deleteTribeMember(c: Context) {
+  try {
+    const body = await c.req.json();
+    const { userId, tribeId } = TribeLeaveSchema.parse(body);
+
+    const db = drizzle(c.env.DB);
+
+    // get the tribe leader id
+    const tribeData = await db
+      .select({
+        leaderId: tribe.leaderId,
+      })
+      .from(tribe)
+      .where(eq(tribe.id, tribeId))
+      .limit(1);
+
+    const tribeLeaderId = tribeData[0].leaderId;
+
+    // if user is tribe leader, set the tribe leaderId to null
+    if (tribeLeaderId === userId) {
+      await db
+        .update(tribe)
+        .set({
+          leaderId: null,
+        })
+        .where(eq(tribe.id, tribeId));
+    }
+
+    // delete the tribe member entry for this user
+    const deleteTribeMember = await db
+      .delete(tribeMember)
+      .where(and(
+        eq(tribeMember.tribeId, tribeId),
+        eq(tribeMember.userId, userId)
+      ))
+      .returning();
+
+    return c.json({ deleted: deleteTribeMember[0] }, 200);
+
+  } catch (error) {
+    console.error("Error deleting tribe member", error);
+    return c.json({ error: "Something went wrong" }, 500);
+  }
 }

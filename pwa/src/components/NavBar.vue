@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import IconPlus from "~icons/tabler/plus";
 import IconArrowLeft from "~icons/tabler/arrow-left";
+import IconReload from "~icons/tabler/reload";
 import { RouterLink } from "vue-router";
 import { haptic } from "~/plugins/haptic";
 import { computed } from "vue";
@@ -60,15 +61,27 @@ const formattedDate = computed(() => {
     </div>
 
     <div class="navbar-end">
-      <!-- Leave end of navbar empty if there is a back button -->
+      <button
+        v-if="backButton"
+        tabindex="0"
+        role="button"
+        class="btn btn-ghost btn-circle"
+        @click="() => {
+          haptic();
+          router.go(0);
+        }"
+      >
+        <icon-reload style="font-size: 1.5em" />
+      </button>
       <router-link
-        v-if="!backButton"
+        v-else
         to="/habit/create"
         class="btn bg-base-200 btn-circle text-primary"
         @click="() => haptic()"
       >
         <icon-plus style="font-size: 1.4em" />
       </router-link>
+
     </div>
 
 

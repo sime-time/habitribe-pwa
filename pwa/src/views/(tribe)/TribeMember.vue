@@ -53,11 +53,7 @@ async function fetchTribeMemberData() {
 
   const habitData = await habitResponse.json();
 
-  console.log("habitData", habitData)
-
   const tribeMemberData = { ...userData, habits: habitData };
-
-  console.log("tribeMember", tribeMemberData)
 
   lastSavedHabits.value = tribeMemberData;
 

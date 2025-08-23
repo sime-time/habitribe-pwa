@@ -18,4 +18,10 @@ export const TribeInviteSchema = z.object({
   userId: z.coerce.number(),
   inviteCode: z.string().min(6, "Code must be 6 characters long").max(6, "Code must be 6 characters long"),
 });
-export type TribeInviteSchemaType = z.infer<typeof TribeInviteSchema>; ``
+export type TribeInviteSchemaType = z.infer<typeof TribeInviteSchema>;
+
+export const TribeLeaveSchema = z.object({
+  userId: z.coerce.number(),
+  tribeId: z.coerce.number(),
+});
+export type TribeLeaveSchemaType = z.infer<typeof TribeLeaveSchema>;
