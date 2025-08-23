@@ -98,10 +98,15 @@ const proofUrl = computed(() => {
 
 // trigger the hidden input element
 const triggerProofInput = () => {
+  if (props.readonly) {
+    return;
+  }
   proofInput.value?.click();
 }
 
 const handleProofSelected = async (event: Event) => {
+  if (props.readonly) return;
+
   const target = event.target as HTMLInputElement;
   if (!target.files || target.files.length === 0) return;
 
