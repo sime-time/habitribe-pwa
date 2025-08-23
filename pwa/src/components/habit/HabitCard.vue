@@ -12,6 +12,7 @@ const props = defineProps<{
   goal: number;
   progress: number;
   unit: string;
+  readonly?: boolean;
 }>();
 
 // --- Track Progress ---
@@ -22,9 +23,12 @@ const progressValue = computed(() => divide(progressPercent.value, incrementAmou
 
 const emit = defineEmits(["updateProgress"])
 function increment() {
-  haptic();
-  progressPercent.value += incrementAmount.value;
-  emit("updateProgress", progressValue.value, props.id);
+  if (!props.readonly) {
+    haptic();
+    progressPercent.value += incrementAmount.value;
+    emit("updateProgress", progressValue.value, props.id);
+
+  }
 }
 function decrement() {
   haptic();
@@ -98,6 +102,7 @@ const handleProofSelected = (event: Event) => {
 
   <!-- Slide Up Modal -->
   <dialog
+    v-if="!readonly"
     ref="dialog"
     class="modal modal-bottom sm:modal-middle"
   >

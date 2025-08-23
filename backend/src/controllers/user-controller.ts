@@ -40,3 +40,28 @@ export async function updateUser(c: Context) {
     return c.json({ error: "Failed to update profile" }, 500);
   }
 }
+
+export async function getUser(c: Context) {
+  try {
+    const userId = c.req.param("id");
+
+    const db = drizzle(c.env.DB);
+
+    const userData = await db
+      .select({
+        id: user.id,
+        displayName: user.displayName,
+        image: user.image,
+      })
+      .from(user)
+      .where(eq(user.id, Number(userId)))
+      .limit(1);
+
+    return c.json(userData[0], 200);
+
+  } catch (error) {
+    console.error("Error getting user:", error);
+    return c.json({ error: "Failed to get user" }, 500);
+
+  }
+}

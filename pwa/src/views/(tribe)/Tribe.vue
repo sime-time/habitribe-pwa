@@ -11,6 +11,7 @@ import { useToast } from "vue-toastification";
 import IconUserPlus from "~icons/solar/user-plus-broken";
 import IconGroup from "~icons/solar/users-group-two-rounded-broken"
 import IconCopy from "~icons/tabler/copy";
+import { RouterLink } from "vue-router";
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
@@ -66,7 +67,6 @@ async function fetchTribeMembers(tribeId: string) {
     return u;
   });
 
-  console.log("members", fetchedUsers);
   return fetchedUsers;
 }
 
@@ -182,22 +182,27 @@ function copyInviteCode() {
             <li
               v-for="member in sortedTribeMembers"
               :key="member.id"
-              class="flex items-center justify-between"
             >
-              <div class="flex items-center gap-3">
-                <!-- Avatar -->
-                <div class="avatar">
-                  <div class="w-12 rounded-full">
-                    <img :src="member.image" />
-                  </div>
-                </div>
-                <!-- Display name -->
-                <p>{{ member.displayName }}</p>
-              </div>
+              <router-link
+                :to="`/tribe/member?userId=${member.id}`"
+                class="flex items-center justify-between w-full"
+              >
 
-              <div>
-                <span>{{ member.progress }}%</span>
-              </div>
+                <div class="flex items-center gap-3">
+                  <!-- Avatar -->
+                  <div class="avatar">
+                    <div class="w-12 rounded-full">
+                      <img :src="member.image" />
+                    </div>
+                  </div>
+                  <!-- Display name -->
+                  <p>{{ member.displayName }}</p>
+                </div>
+
+                <div>
+                  <span>{{ member.progress }}%</span>
+                </div>
+              </router-link>
             </li>
           </ul>
         </div>

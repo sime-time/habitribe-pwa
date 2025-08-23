@@ -2,7 +2,7 @@
 import IconSettings from "~icons/solar/settings-outline";
 import IconLogout from "~icons/tabler/logout-2";
 import IconUser from "~icons/solar/user-circle-outline";
-import IconAdjust from "~icons/tabler/adjustments-horizontal";
+import IconWhatsApp from "~icons/tabler/brand-whatsapp";
 import { useAuthStore } from "~/stores/auth-store";
 import { haptic } from "~/plugins/haptic";
 
@@ -39,13 +39,13 @@ async function handleSignOut() {
         </router-link>
       </li>
       <li>
-        <router-link
-          to="/settings"
+        <a
+          href="https://chat.whatsapp.com/ISGoSen2rF5HbIqFQuOPLb?mode=ems_copy_t"
           class="bg-base-100"
         >
-          <icon-adjust />
-          Settings
-        </router-link>
+          <icon-whats-app />
+          Our WhatsApp
+        </a>
       </li>
       <li>
         <button
