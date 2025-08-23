@@ -168,6 +168,8 @@ const totalProgress = computed(() => {
         :goal="habit.goalValue"
         :unit="habit.goalUnit"
         :progress="habit.progress"
+        :image="habit.image"
+        :date="date"
         @update-progress="updateProgress"
       />
     </div>

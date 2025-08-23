@@ -1,0 +1,1 @@
+ALTER TABLE `habit_entry` ADD `image` text;

@@ -20,6 +20,7 @@ export const HabitEntrySchema = z.object({
     message: "Date must be in YYYY-MM-DD format",
   }),
   progress: z.coerce.number().optional(),
+  image: z.string().optional(),
 });
 export type HabitEntrySchemaType = z.infer<typeof HabitEntrySchema>;
 

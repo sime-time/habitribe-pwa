@@ -2,12 +2,9 @@
 import TabDock from "~/components/TabDock.vue";
 import NavBar from "~/components/NavBar.vue";
 import HabitCard from "~/components/habit/HabitCard.vue";
-import HabitTotalProgress from "~/components/habit/HabitTotalProgress.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
-import { useAuthStore } from "~/stores/auth-store";
-import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import { useQuery } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
@@ -16,6 +13,8 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 const route = useRoute();
 const userId = route.query.userId;
 
+// today's date in YYYY-MM-DD format
+const date = today(getLocalTimeZone()).toString().slice(0, 10);
 
 // this will hold the state of habits as they were last known by the server
 const lastSavedHabits = ref<any[]>([]);
@@ -103,6 +102,8 @@ const userImage = computed(() => {
         :goal="habit.goalValue"
         :unit="habit.goalUnit"
         :progress="habit.progress"
+        :image="habit.image"
+        :date="date"
         :readonly="true"
       />
     </div>

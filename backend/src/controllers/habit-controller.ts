@@ -227,6 +227,7 @@ export async function getUserHabitEntries(c: Context) {
         goalValue: habitEntry.goal,
         goalUnit: habit.goalUnit,
         status: habitEntry.status,
+        image: habitEntry.image,
       })
       .from(habitEntry)
       .leftJoin(habit, eq(habit.id, habitEntry.habitId))
@@ -275,6 +276,32 @@ export async function updateHabitEntry(c: Context) {
     return c.json({ updated: updatedHabitEntry[0] }, 200);
   } catch (error) {
     console.error("Error updating habit entry", error);
+    return c.json({ error: "Something went wrong" }, 500);
+  }
+}
+
+export async function updateHabitEntryImage(c: Context) {
+  try {
+    const { id } = c.req.param();
+    const body = await c.req.json();
+    const { date, image } = HabitEntrySchema.parse(body);
+
+    const db = drizzle(c.env.DB);
+    const updatedHabitEntry = await db
+      .update(habitEntry)
+      .set({
+        image: image,
+      })
+      .where(
+        and(
+          eq(habitEntry.habitId, parseInt(id)),
+          eq(habitEntry.date, date)),
+      )
+      .returning();
+
+    return c.json({ updated: updatedHabitEntry[0] }, 200);
+  } catch (error) {
+    console.error("Error updating habit entry image", error);
     return c.json({ error: "Something went wrong" }, 500);
   }
 }

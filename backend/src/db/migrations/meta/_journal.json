@@ -71,6 +71,13 @@
       "when": 1755825598145,
       "tag": "0009_damp_the_watchers",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1755981648631,
+      "tag": "0010_past_vision",
+      "breakpoints": true
     }
   ]
 }

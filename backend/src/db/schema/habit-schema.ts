@@ -34,6 +34,7 @@ export const habitEntry = sqliteTable("habit_entry", {
   goal: integer("goal").notNull(),
   progress: integer("progress").default(0).notNull(),
   status: text("status", { enum: ["pending", "completed", "missed"] }).default("pending").notNull(),
+  image: text("image"),
 }, (table) => [
   // composite key to ensure one unique habit entry per day
   primaryKey({ columns: [table.habitId, table.date] }),

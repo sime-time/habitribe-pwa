@@ -7,6 +7,7 @@ import {
   getUserHabits,
   getUserHabitEntries,
   updateHabitEntry,
+  updateHabitEntryImage,
   getUserProgress
 } from "../controllers/habit-controller";
 
@@ -19,6 +20,7 @@ router.delete("/delete/:id", deleteHabit);
 router.get("/user/:userId", getUserHabits);
 router.get("/entries/user/:userId", getUserHabitEntries);
 router.post("/entries/update/:id", updateHabitEntry);
+router.put("/entries/update/image/:id", updateHabitEntryImage);
 router.get("/progress/user/:userId", getUserProgress);
 // router.get("/progress/:id", getHabitProgress);
 

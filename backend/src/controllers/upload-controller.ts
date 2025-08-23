@@ -53,3 +53,35 @@ export async function getAvatarUploadUrl(c: Context) {
     return c.json({ error: "Failed to generate upload URL" }, 500);
   }
 }
+
+export async function getProofUploadUrl(c: Context) {
+  try {
+    const { contentType, habitId, date } = await c.req.json();
+
+    const client = new S3Client({
+      region: "auto",
+      endpoint: `https://${c.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: c.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: c.env.R2_SECRET_ACCESS_KEY,
+      },
+    });
+
+    const key = `proof/${habitId}/${date}/${crypto.randomUUID()}`;
+
+    const command = new PutObjectCommand({
+      Bucket: c.env.R2_BUCKET_NAME,
+      Key: key,
+      ContentType: contentType,
+    });
+
+    // Pre-signed URL expires in 30 minutes ('expiresIn: 1800').
+    const uploadUrl = await getSignedUrl(client, command, { expiresIn: 1800 });
+
+    return c.json({ uploadUrl, key });
+
+  } catch (error) {
+    console.error("Error generating pre-signed URL:", error);
+    return c.json({ error: "Failed to generate upload URL" }, 500);
+  }
+}
