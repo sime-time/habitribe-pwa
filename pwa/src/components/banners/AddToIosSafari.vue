@@ -16,10 +16,10 @@ const props = defineProps<{
 
       <!-- Close button -->
       <button
-        class="absolute top-0 right-0 p-3"
+        class="absolute top-0 right-0 p-2"
         @click="props.closePrompt"
       >
-        <icon-x class="text-2xl" />
+        <icon-x class="text-xl" />
       </button>
 
       <!-- Text -->
@@ -37,7 +37,7 @@ const props = defineProps<{
       <!-- Add to Home Screen instructions -->
       <div class="flex flex-col gap-2 items-center text-lg w-full px-4">
         <p>Scroll down and then click:</p>
-        <div class="bg-zinc-800 flex justify-between items-center w-full px-4 py-2 rounded-lg">
+        <div class="btn btn-block">
           <p>Add to Home Screen</p>
           <icon-square-plus class="text-2xl" />
         </div>
@@ -45,7 +45,7 @@ const props = defineProps<{
 
       <!-- Do not show again -->
       <button
-        class="border-2 p-1"
+        class="btn btn-outline"
         @click="props.doNotShowAgain"
       >
         Don't show again

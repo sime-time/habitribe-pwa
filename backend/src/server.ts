@@ -8,6 +8,7 @@ import habitRoute from "./routes/habit-route";
 import uploadRoute from "./routes/upload-route";
 import tribeRoute from "./routes/tribe-route";
 import userRoute from "./routes/user-route";
+import webhookRoute from "./routes/webhook-route";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -50,9 +51,8 @@ app.get("/", (c) => {
   return c.text("Hello Habitribe");
 });
 
-app.get("/client", (c) => {
-  return c.json({ success: c.env.CLIENT_ORIGIN_URL })
-});
+// YouForm data -> MailerLite waitlist
+app.route("/webhook", webhookRoute)
 
 export default {
   fetch: app.fetch,

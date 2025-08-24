@@ -9,4 +9,6 @@ export interface CloudflareBindings {
   R2_BUCKET_NAME: string;
   R2_ACCESS_KEY_ID: string;
   R2_SECRET_ACCESS_KEY: string;
+  MAILERLITE_API_KEY: string;
+  MAILERLITE_GROUP_ID: string;
 }
