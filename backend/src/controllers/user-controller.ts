@@ -29,18 +29,19 @@ export async function updateUser(c: Context) {
 
     // 2. Update the user record in the database with the validated data.
     // Drizzle automatically handles updating only the fields present in the `set` object.
-    await db.update(user).set(validUserData).where(eq(user.id, validUserData.id));
+    await db.update(user).set({
+      name: validUserData.name,
+      displayName: validUserData.displayName,
+      image: validUserData.image,
+      email: validUserData.email,
+    }).where(eq(user.id, validUserData.id));
 
     // 3. Fetch the updated user data to return to the client.
     const updatedUser = await db
       .select({
-        id: user.id,
         name: user.name,
         displayName: user.displayName,
-        email: user.email,
-        emailVerified: user.emailVerified,
         image: user.image,
-        createdAt: user.createdAt,
       })
       .from(user)
       .where(eq(user.id, validUserData.id))
