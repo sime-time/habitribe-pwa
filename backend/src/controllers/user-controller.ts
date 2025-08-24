@@ -52,8 +52,12 @@ export async function updateUser(c: Context) {
       message: "Profile updated successfully",
       user: updatedUser[0],
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating user:", error);
+    const cause = error.cause?.message || "";
+    if (cause.includes("UNIQUE constraint")) {
+      return c.json({ error: "Display name is already taken" }, 409);
+    }
     return c.json({ error: "Failed to update profile" }, 500);
   }
 }
@@ -79,6 +83,5 @@ export async function getUser(c: Context) {
   } catch (error) {
     console.error("Error getting user:", error);
     return c.json({ error: "Failed to get user" }, 500);
-
   }
 }

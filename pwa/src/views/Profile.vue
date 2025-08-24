@@ -146,11 +146,18 @@ async function updateProfile() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(validPayload),
     });
-    const { user: updatedUser } = await response.json();
+
+    const responseBody = await response.json();
+    console.log("responsebody", responseBody);
+
+    if (!response.ok) {
+      toast.error(responseBody.error || "Failed to update profile");
+      return;
+    }
 
     // --- State Synchronization ---
     // After a successful save, update the global auth store with the fresh user data.
-    authStore.updateUser(updatedUser);
+    authStore.updateUser(responseBody.user);
 
     avatarPreviewUrl.value = null; // Clear the temporary preview
     toast.success("Profile updated");
