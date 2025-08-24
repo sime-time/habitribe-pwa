@@ -4,6 +4,8 @@ import NavBar from "~/components/NavBar.vue";
 import { useAuthStore } from "~/stores/auth-store";
 import { useToast } from "vue-toastification";
 import router from "~/router";
+import { UpdateUserSchema } from "@habitribe/shared-types";
+import { z } from "zod";
 
 const authStore = useAuthStore();
 const isLoading = ref(false);
@@ -134,12 +136,15 @@ async function updateProfile() {
   }
 
   try {
+    // validate payload
+    const validPayload = UpdateUserSchema.parse(payload);
+
     // Use the generic user update endpoint.
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update`, {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(validPayload),
     });
     const { user: updatedUser } = await response.json();
 
@@ -154,7 +159,11 @@ async function updateProfile() {
     router.back();
   } catch (error) {
     console.error("Failed to update profile:", error);
-    toast.error("Failed to update profile");
+    if (error instanceof z.ZodError) {
+      toast.error(error.issues[0].message);
+    } else {
+      toast.error("Something went wrong");
+    }
   } finally {
     isLoading.value = false;
   }
