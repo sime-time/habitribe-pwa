@@ -4,6 +4,7 @@ import NavBar from "~/components/NavBar.vue";
 import HabitCard from "~/components/habit/HabitCard.vue";
 import HabitTotalProgress from "~/components/habit/HabitTotalProgress.vue";
 import LoadingSpinner from "~/components/LoadingSpinner.vue";
+import IconCancel from "~icons/tabler/cancel";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
@@ -157,7 +158,7 @@ const totalProgress = computed(() => {
     <div v-else-if="isError">Internal Server Error: {{ error?.message }}</div>
 
     <div
-      v-else-if="data"
+      v-else-if="data && data.length > 0"
       class="grid grid-cols-1 gap-4 w-full"
     >
       <HabitCard
@@ -173,6 +174,19 @@ const totalProgress = computed(() => {
         @update-progress="updateProgress"
       />
     </div>
+
+    <div
+      v-else
+      class="card bg-base-200 w-full"
+    >
+      <div class="card-body items-center text-center">
+        <icon-cancel class="text-4xl" />
+        <h2 class="card-title">No Habits Yet!</h2>
+        <p class="max-w-64 text-neutral-400">Press the '+' sign in the top right corner to add your first habit.</p>
+      </div>
+    </div>
+
+
   </main>
   <TabDock tab="habits" />
 </template>

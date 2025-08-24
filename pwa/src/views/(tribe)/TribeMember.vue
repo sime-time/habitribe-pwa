@@ -7,6 +7,7 @@ import { useRoute } from "vue-router";
 import { useQuery } from "@tanstack/vue-query";
 import { computed, ref } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
+import IconCancel from "~icons/tabler/cancel";
 
 // --- State Management ---
 
@@ -91,7 +92,7 @@ const userImage = computed(() => {
     <div v-else-if="isError">Internal Server Error: {{ error?.message }}</div>
 
     <div
-      v-else-if="data"
+      v-else-if="data && data.length > 0"
       class="grid grid-cols-1 gap-4 w-full"
     >
       <HabitCard
@@ -106,6 +107,17 @@ const userImage = computed(() => {
         :date="date"
         :readonly="true"
       />
+    </div>
+
+    <div
+      v-else
+      class="card bg-base-200 w-full"
+    >
+      <div class="card-body items-center text-center">
+        <icon-cancel class="text-4xl" />
+        <h2 class="card-title">Tribe member has no habits!</h2>
+        <p class="max-w-64 text-neutral-400">Default consistency is 0%</p>
+      </div>
     </div>
   </main>
   <TabDock tab="tribe" />
