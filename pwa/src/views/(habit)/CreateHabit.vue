@@ -131,7 +131,7 @@ async function onSubmit() {
 
         <!-- Goal Value -->
         <fieldset class="card bg-base-200 p-4 space-y-2">
-          <label class="text-sm opacity-50">Goal Value</label>
+          <label class="text-sm opacity-50">Goal</label>
           <div class="grid grid-cols-1 items-center justify-between">
 
             <input
