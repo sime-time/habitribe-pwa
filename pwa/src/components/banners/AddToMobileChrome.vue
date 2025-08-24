@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import IconX from "~icons/tabler/x";
 import IconDots from "~icons/tabler/dots-vertical";
-import IconHomeScreen from "~icons/tabler/square-circle";
+import IconHomeScreen from "~icons/tabler/square-plus";
 import IconArrowUp from "~icons/tabler/arrow-up";
 
 const props = defineProps<{
