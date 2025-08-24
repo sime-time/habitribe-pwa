@@ -135,23 +135,23 @@ async function updateProfile() {
 
   try {
     // Use the generic user update endpoint.
-    await fetch(`${import.meta.env.VITE_API_URL}/api/user/update`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update`, {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    const { user: updatedUser } = await response.json();
 
-    // --- Optimistic UI Update ---
-    // After a successful save, update the global auth store.
-    // This makes the UI feel instant.
+    // --- State Synchronization ---
+    // After a successful save, update the global auth store with the fresh user data.
+    authStore.updateUser(updatedUser);
+
     avatarPreviewUrl.value = null; // Clear the temporary preview
-
     toast.success("Profile updated");
 
-    // go back to previous page
+    // Go back to the previous page.
     router.back();
-
   } catch (error) {
     console.error("Failed to update profile:", error);
     toast.error("Failed to update profile");

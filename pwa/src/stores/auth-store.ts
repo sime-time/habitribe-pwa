@@ -36,6 +36,12 @@ export const useAuthStore = defineStore("useAuthStore", () => {
     user.value = userData;
   }
 
+  function updateUser(updatedFields: Partial<User>) {
+    if (user.value) {
+      user.value = { ...user.value, ...updatedFields };
+    }
+  }
+
   async function checkAuthStatus() {
     try {
       const { data: session } = await authClient.getSession();
@@ -192,5 +198,6 @@ export const useAuthStore = defineStore("useAuthStore", () => {
     sendCodeToEmail,
     verifyEmailCode,
     setAuth,
+    updateUser,
   };
 });

@@ -31,9 +31,25 @@ export async function updateUser(c: Context) {
     // Drizzle automatically handles updating only the fields present in the `set` object.
     await db.update(user).set(validUserData).where(eq(user.id, validUserData.id));
 
+    // 3. Fetch the updated user data to return to the client.
+    const updatedUser = await db
+      .select({
+        id: user.id,
+        name: user.name,
+        displayName: user.displayName,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        image: user.image,
+        createdAt: user.createdAt,
+      })
+      .from(user)
+      .where(eq(user.id, validUserData.id))
+      .limit(1);
+
     return c.json({
       success: true,
       message: "Profile updated successfully",
+      user: updatedUser[0],
     });
   } catch (error) {
     console.error("Error updating user:", error);

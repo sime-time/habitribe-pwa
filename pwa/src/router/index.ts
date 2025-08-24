@@ -111,7 +111,7 @@ router.beforeEach((to, from, next) => {
   // make sure the user has a profile pic
   if (
     (to.path === "/tribe/create" || to.path === "/tribe/join") &&
-    (!user.value.image)
+    (!user.value.image || !user.value.displayName)
   ) {
     return next("/profile");
   }
