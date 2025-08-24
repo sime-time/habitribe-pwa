@@ -65,7 +65,7 @@ const { data, isLoading, isError, error, refetch } = useQuery({
 });
 
 const userImage = computed(() => {
-  if (data.value) {
+  if (data.value.image) {
     return `${import.meta.env.VITE_R2_PUBLIC_URL}/${data.value.image}`
   }
   return "/blank-avatar.png";

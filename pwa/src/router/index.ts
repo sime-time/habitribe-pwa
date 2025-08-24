@@ -108,13 +108,13 @@ router.beforeEach((to, from, next) => {
   }
 
   // if the route is a tribe join/creation page,
-  // make sure the user has a profile pic and display name
-  // if (
-  //   (to.path === "/tribe/create" || to.path === "/tribe/join") &&
-  //   (!user.value.image || !user.value.displayName)
-  // ) {
-  //   return next("/profile");
-  // }
+  // make sure the user has a profile pic
+  if (
+    (to.path === "/tribe/create" || to.path === "/tribe/join") &&
+    (!user.value.image)
+  ) {
+    return next("/profile");
+  }
 
   // otherwise, continue to route as normal
   return next();
