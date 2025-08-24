@@ -2,9 +2,7 @@
 import IconX from "~icons/tabler/x";
 import IconDotsVertical from "~icons/tabler/dots-vertical";
 import IconArrowDownRight from "~icons/tabler/arrow-down-right";
-
-// Local asset (replace with your actual path in Vite)
-import ffIcon from "@/assets/img/icons/firefox-install.png";
+import IconFireFox from "~icons/tabler/brand-firefox"
 
 const props = defineProps<{
   closePrompt: () => void;
@@ -40,11 +38,7 @@ const props = defineProps<{
         <p>Scroll down and then click:</p>
         <div class="bg-zinc-50 flex items-center justify-around w-full px-4 py-2 rounded-lg text-zinc-900">
           <div class="flex gap-6 items-center">
-            <img
-              :src="ffIcon"
-              alt="Firefox install icon"
-              class="w-8 h-8"
-            />
+            <icon-fire-fox class="w-8 h-8" />
             <p>Install</p>
           </div>
         </div>
@@ -55,7 +49,7 @@ const props = defineProps<{
         class="border-2 p-1"
         @click="props.doNotShowAgain"
       >
-        Don’t show again
+        Don't show again
       </button>
 
       <!-- Bouncing arrow -->
