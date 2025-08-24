@@ -13,9 +13,9 @@ const props = defineProps<{
 <template>
   <div class="fixed top-0 left-0 right-0 h-[60%] z-50 pt-12 px-4 text-white">
     <!-- Bouncing arrow -->
-    <IconArrowUp class="text-4xl absolute top-[10px] right-[10px] text-indigo-700 z-10 animate-bounce" />
+    <IconArrowUp class="text-4xl absolute top-[10px] right-[10px] text-base-content z-10 animate-bounce" />
 
-    <div class="relative bg-primary p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
+    <div class="relative bg-base-100 p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
       <!-- Close button -->
       <button
         class="absolute top-0 right-0 p-3"

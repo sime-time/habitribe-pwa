@@ -12,9 +12,9 @@ const props = defineProps<{
 
 <template>
   <div class="fixed top-0 left-0 right-0 h-[70%] z-50 pt-12 px-4 text-white">
-    <div class="relative bg-primary p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
+    <div class="relative bg-base-100 p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
       <!-- Bouncing arrow -->
-      <IconArrowUp class="text-4xl absolute -top-[40px] right-0 text-indigo-700 z-10 animate-bounce" />
+      <IconArrowUp class="text-4xl absolute -top-[40px] right-0 text-base-content z-10 animate-bounce" />
 
       <!-- Close button -->
       <button
@@ -32,7 +32,7 @@ const props = defineProps<{
       <!-- Share instructions -->
       <div class="flex gap-2 items-center text-lg">
         <p>Click the</p>
-        <IconShare class="text-4xl" />
+        <IconShare class="text-3xl" />
         <p>icon</p>
       </div>
 

@@ -14,7 +14,7 @@ const searchUrl =
   <div
     class="fixed bottom-0 left-0 right-0 h-[60%] z-50 pb-12 px-4 text-white flex flex-col items-center justify-around"
   >
-    <div class="relative bg-primary p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
+    <div class="relative bg-base-100 p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
       <!-- Close button -->
       <button
         class="absolute top-0 right-0 p-3"

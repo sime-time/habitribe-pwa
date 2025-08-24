@@ -12,7 +12,7 @@ const props = defineProps<{
 
 <template>
   <div class="fixed bottom-0 left-0 right-0 h-[80%] z-50 pb-12 px-4 text-white">
-    <div class="relative bg-primary p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
+    <div class="relative bg-base-100 p-4 h-full rounded-xl flex flex-col justify-around items-center text-center">
       <!-- Close button -->
       <button
         class="absolute top-0 right-0 p-3"
@@ -60,7 +60,7 @@ const props = defineProps<{
       </button>
 
       <!-- Arrow -->
-      <IconArrowDown class="text-4xl absolute -bottom-[50px] right-[-3px] text-indigo-700 z-10 animate-bounce" />
+      <IconArrowDown class="text-4xl absolute -bottom-[50px] right-[-3px] text-base-content z-10 animate-bounce" />
     </div>
   </div>
 </template>
