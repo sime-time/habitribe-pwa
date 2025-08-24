@@ -66,7 +66,7 @@ const { data, isLoading, isError, error, refetch } = useQuery({
 });
 
 const userImage = computed(() => {
-  if (data.value.image) {
+  if (data.value) {
     return `${import.meta.env.VITE_R2_PUBLIC_URL}/${data.value.image}`
   }
   return "/blank-avatar.png";
@@ -92,7 +92,7 @@ const userImage = computed(() => {
     <div v-else-if="isError">Internal Server Error: {{ error?.message }}</div>
 
     <div
-      v-else-if="data && data.length > 0"
+      v-else-if="data.habits && data.habits.length > 0"
       class="grid grid-cols-1 gap-4 w-full"
     >
       <HabitCard
