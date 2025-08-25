@@ -25,7 +25,7 @@ onMounted(() => {
     code.value = linkCode;
     onSubmit();
   }
-})
+});
 
 async function onSubmit() {
   loading.value = true;
@@ -93,7 +93,7 @@ async function onSubmit() {
       <!-- VERIFICATION CODE INPUT -->
       <input
         v-model="code"
-        type="input"
+        type="text"
         class="input input-lg text-center"
         placeholder="XXXXXX"
       />
