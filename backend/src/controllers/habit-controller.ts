@@ -89,6 +89,16 @@ export async function createHabit(c: Context) {
       })
       .returning();
 
+    // create a new habit entry for today
+    const today = new Date().toISOString().slice(0, 10);
+    const newEntry = {
+      habitId: newHabit[0].id,
+      date: today,
+      goal: newHabit[0].goalValue,
+      progress: 0,
+    }
+    await db.insert(habitEntry).values(newEntry);
+
     return c.json({ added: newHabit[0] }, 201);
   } catch (error) {
     console.error("Error creating habit", error);
@@ -144,8 +154,6 @@ export async function getUserHabits(c: Context) {
 }
 
 
-// ensures that the frontend always receives a complete set of habit entries for any given day,
-// creating them on-the-fly if they're missing.
 export async function getUserHabitEntries(c: Context) {
   try {
     // get userId from route param
@@ -191,6 +199,8 @@ export async function getUserHabitEntries(c: Context) {
 
     // Find which entries already exist for those active habits
     const activeHabitIds = activeHabits.map(h => h.id);
+
+    /* Remove because it will create new entries on future days and previous days which is not necessary
     const existingEntries = await db
       .select()
       .from(habitEntry)
@@ -216,6 +226,7 @@ export async function getUserHabitEntries(c: Context) {
 
       await db.insert(habitEntry).values(newEntries);
     }
+    */
 
     // return the full complete set of habit entries for this date
     // this runs regardless if new entries are created or not

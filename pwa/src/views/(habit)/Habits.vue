@@ -182,7 +182,8 @@ const totalProgress = computed(() => {
       <div class="card-body items-center text-center">
         <icon-cancel class="text-4xl" />
         <h2 class="card-title">No Habits Yet!</h2>
-        <p class="max-w-64 text-neutral-400">Press the '+' sign in the top right corner to add your first habit.</p>
+        <p class="max-w-64 text-neutral-400">Press the '+' sign in the top right corner to add a habit to {{
+          today(getLocalTimeZone()).toString().slice(0, 10) }}.</p>
       </div>
     </div>
 
