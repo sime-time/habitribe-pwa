@@ -21,15 +21,20 @@ const props = defineProps<{
 
 // --- Track Progress ---
 const incrementAmount = computed(() => divide(100, props.goal));
-
+const progressInput = ref(props.progress);
 const progressPercent = ref(props.progress * incrementAmount.value);
 const progressValue = computed(() => divide(progressPercent.value, incrementAmount.value));
 
 const emit = defineEmits(["updateProgress"])
+function changeProgress() {
+  progressPercent.value = progressInput.value * incrementAmount.value;
+  emit("updateProgress", progressValue.value, props.id);
+}
 function increment() {
   if (!props.readonly) {
     haptic();
     progressPercent.value += incrementAmount.value;
+    progressInput.value = progressValue.value;
     emit("updateProgress", progressValue.value, props.id);
   }
 }
@@ -42,11 +47,13 @@ function decrement() {
     progressPercent.value = 0;
   }
 
+  progressInput.value = progressValue.value;
   emit("updateProgress", progressValue.value, props.id);
 }
 function reset() {
   haptic();
   progressPercent.value = 0;
+  progressInput.value = progressValue.value;
   emit("updateProgress", progressValue.value, props.id);
 }
 
@@ -111,7 +118,6 @@ const handleProofSelected = async (event: Event) => {
   if (!target.files || target.files.length === 0) return;
 
   const file = target.files[0];
-  console.log("File selected:", file.name);
 
   // Create a temporary local URL to provide an instant preview of the new avatar.
   proofPreviewUrl.value = URL.createObjectURL(file);
@@ -257,7 +263,13 @@ const handleProofSelected = async (event: Event) => {
           :aria-valuenow="progressPercent"
           role="progressbar"
         >
-          <span class="text-3xl font-bold text-neutral-content">{{ progressValue }}</span>
+          <input
+            v-model="progressInput"
+            class="input input-ghost text-3xl font-bold text-neutral-content text-center "
+            type="number"
+            @input="changeProgress"
+          />
+
         </div>
         <button
           class="btn btn-circle text-lg"

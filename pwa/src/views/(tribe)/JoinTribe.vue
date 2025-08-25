@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import NavBar from "~/components/NavBar.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "~/stores/auth-store";
 import { storeToRefs } from "pinia";
 import { TribeInviteSchema } from "@habitribe/shared-types";
 import { ZodError } from "zod";
+import { useRoute } from "vue-router";
 import router from "~/router";
 
 const authStore = useAuthStore();
@@ -14,6 +15,17 @@ const { user } = storeToRefs(authStore);
 const code = ref("");
 const loading = ref(false);
 const toast = useToast();
+
+// if the url has query parameter with a invite code
+// automatically submit and join the tribe
+const route = useRoute();
+const linkCode = route.query.code as string;
+onMounted(() => {
+  if (linkCode) {
+    code.value = linkCode;
+    onSubmit();
+  }
+})
 
 async function onSubmit() {
   loading.value = true;

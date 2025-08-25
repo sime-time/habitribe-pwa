@@ -100,6 +100,13 @@ function copyInviteCode() {
     toast.success("Copied Invite Code");
   }
 }
+function copyInviteLink() {
+  if (tribe.value?.inviteCode) {
+    const baseUrl = window.location.origin
+    navigator.clipboard.writeText(`${baseUrl}/tribe/join?code=${tribe.value.inviteCode}`);
+    toast.success("Copied Invite Link");
+  }
+}
 
 // --- Leave Tribe (useMutation) ---
 const { mutate: leaveTribe } = useMutation({
@@ -170,11 +177,26 @@ const { mutate: leaveTribe } = useMutation({
         </div>
 
         <div class="flex items-center gap-2">
-          <p class="text-neutral-400 text-xs">Invite:</p>
-          <span>
-            {{ tribe.inviteCode }}
-          </span>
-          <button @click="copyInviteCode">
+          <p class="text-neutral-400 text-xs">Code:</p>
+          <button
+            class="flex btn btn-sm btn-outline"
+            @click="copyInviteCode"
+          >
+            <span>
+              {{ tribe.inviteCode }}
+            </span>
+            <IconCopy />
+          </button>
+        </div>
+        <div class="flex items-center gap-2 w-full">
+          <p class="text-neutral-400 text-xs">Link:</p>
+          <button
+            class="flex btn btn-sm btn-outline"
+            @click="copyInviteLink"
+          >
+            <span>
+              Invite Link
+            </span>
             <IconCopy />
           </button>
         </div>
