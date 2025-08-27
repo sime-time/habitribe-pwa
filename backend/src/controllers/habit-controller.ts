@@ -200,7 +200,7 @@ export async function getUserHabitEntries(c: Context) {
     // Find which entries already exist for those active habits
     const activeHabitIds = activeHabits.map(h => h.id);
 
-    /* Remove because it will create new entries on future days and previous days which is not necessary
+    // This will create new entries on future days and previous days which is not necessary
     const existingEntries = await db
       .select()
       .from(habitEntry)
@@ -226,7 +226,7 @@ export async function getUserHabitEntries(c: Context) {
 
       await db.insert(habitEntry).values(newEntries);
     }
-    */
+
 
     // return the full complete set of habit entries for this date
     // this runs regardless if new entries are created or not
