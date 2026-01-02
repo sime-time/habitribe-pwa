@@ -34,6 +34,7 @@ export const auth = (env: CloudflareBindings): ReturnType<typeof betterAuth> => 
     plugins: [
       emailOTP({
         async sendVerificationOTP({ email, otp, type }) {
+          console.log('emailing...')
           await resend.emails.send({
             from: "Habitribe <send@info.habitribe.app>",
             to: email,
